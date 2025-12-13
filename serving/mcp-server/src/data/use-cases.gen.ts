@@ -7,6 +7,11 @@ export interface UseCase {
 
 export const USE_CASES: UseCase[] = [
   {
+    "id": "image-to-text",
+    "description": "Turn images into text, captions, or structured data using the built-in Prompt API",
+    "category": "ai"
+  },
+  {
     "id": "carousel",
     "description": "Build responsive, accessible carousels with CSS Scroll Snap",
     "category": "ui"
