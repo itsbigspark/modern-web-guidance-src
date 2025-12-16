@@ -17,6 +17,11 @@ export const USE_CASES: UseCase[] = [
     "category": "ui"
   },
   {
+    "id": "scroll-driven-animations",
+    "description": "Create animations linked to scroll position",
+    "category": "ui"
+  },
+  {
     "id": "tooltip",
     "description": "Create tooltips with Popover API and Interest Invokers",
     "category": "ui"
