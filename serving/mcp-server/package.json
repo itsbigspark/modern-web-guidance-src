@@ -8,7 +8,14 @@
     ".": "./build/index.js",
     "./lib": "./build/lib.js"
   },
+  "files": [
+    "build",
+    ".mcp-data",
+    "AGENTS.md",
+    "README.md"
+  ],
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "tsx scripts/build-guides.ts && tsc && cp AGENTS.md build/",
     "start": "node build/index.js",
     "dev": "tsx scripts/build-guides.ts && tsx src/index.ts",
