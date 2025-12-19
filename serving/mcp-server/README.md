@@ -43,6 +43,64 @@ npm run build
 npm start
 ```
 
+## Testing Semantic Search
+
+You can test the semantic search capabilities using the demo script:
+
+```bash
+npx tsx scripts/demo-search.ts "fading in and growing an image as the user scrolls down"
+
+# 🔎 Searching for: "fading in and growing an image as the user scrolls down"
+#
+# Vectorizing query...
+#   ↳ Took 102.30ms
+# Querying LanceDB...
+#   ↳ Took 25.60ms
+#
+# Top Results:
+#
+# 1. [scroll-driven-animations] (ui) - Distance: 1.0939
+#    Create animations linked to scroll position
+#
+# 2. [carousel] (ui) - Distance: 1.3641
+#    Build responsive, accessible carousels with CSS Scroll Snap
+```
+
+```bash
+npx tsx scripts/demo-search.ts "loading a low quality image placeholder on slow networks"
+
+# 🔎 Searching for: "loading a low quality image placeholder on slow networks"
+#
+# Vectorizing query...
+#   ↳ Took 104.78ms
+# Querying LanceDB...
+#   ↳ Took 21.99ms
+#
+# Top Results:
+#
+# 1. [lazy-load-images] (webperf) - Distance: 0.7637
+#    Defer loading of off-screen images to minimize network contention and improve LCP.
+#
+# 2. [adaptive-loading] (webperf) - Distance: 0.8346
+#    Load a fallback image when network conditions are poor using the Adaptive Loading API
+```
+
+```bash
+npx tsx scripts/demo-search.ts "showing a tooltip when hovering over a button"
+
+# 🔎 Searching for: "showing a tooltip when hovering over a button"
+#
+# Vectorizing query...
+#   ↳ Took 97.52ms
+# Querying LanceDB...
+#   ↳ Took 23.72ms
+#
+# Top Results:
+#
+# 1. [tooltip] (ui) - Distance: 0.8149
+#    Create tooltips with Popover API and Interest Invokers
+```
+
 ## Development
 
 To run the server in development mode with hot-reloading:
