@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { fileURLToPath } from "url";
+import { marked } from "marked";
 import { Embedder } from "../src/lib/embedder.js";
 import { Store, type UseCase as StoreUseCase } from "../src/lib/store.js";
 
@@ -55,11 +56,10 @@ async function processGuides() {
       const filePath = path.join(categoryDir, file);
       const content = fs.readFileSync(filePath, "utf-8");
 
-      const { data, content: markdownBody } = matter(content);
+      const { data, content: markdownBody, matter: frontmatter } = matter(content);
 
-      if (!data.description) {
-        console.warn(`Warning: Missing metadata in ${filePath}`);
-        continue;
+      if (!data.description || !frontmatter) {
+        throw new Error(`Missing frontmatter or description in ${filePath}`);
       }
 
       useCases.push({
@@ -68,17 +68,21 @@ async function processGuides() {
         category,
       });
 
-      console.log(`Embedding ${id}...`);
-      const embeddingText = `${id} (${category}): ${data.description}`;
-      console.log(`Embedding ${id} ("${embeddingText}")...`);
-      const vector = await embedder.embed(embeddingText);
+      const chunks = chunkMarkdown(markdownBody);
+      chunks.push(frontmatter);
 
-      storeUseCases.push({
-        id,
-        description: data.description,
-        category,
-        vector
-      });
+      for (const chunk of chunks) {
+        const embeddingText = `${id} (${category})\n\n${chunk}`;
+        const vector = await embedder.embed(embeddingText);
+
+        storeUseCases.push({
+          id,
+          description: data.description,
+          category,
+          chunkContent: chunk,
+          vector
+        });
+      }
 
       // Write clean markdown to build dir
       const buildFilePath = path.join(buildCategoryDir, file);
@@ -103,6 +107,31 @@ export const USE_CASES: UseCase[] = ${JSON.stringify(useCases, null, 2)};
   console.log("Upserting to LanceDB...");
   await store.upsert(storeUseCases);
   console.log("Vector store updated.");
+
+}
+
+function chunkMarkdown(markdown: string): string[] {
+  const tokens = marked.lexer(markdown);
+  const chunks: string[] = [];
+  let currentChunk: string[] = [];
+
+  for (const token of tokens) {
+    if (token.type === 'heading') {
+      if (currentChunk.length > 0) {
+        chunks.push(currentChunk.join("\n\n"));
+        currentChunk = [];
+      }
+      currentChunk.push(token.raw);
+    } else {
+      currentChunk.push(token.raw);
+    }
+  }
+
+  if (currentChunk.length > 0) {
+    chunks.push(currentChunk.join("\n\n"));
+  }
+
+  return chunks.filter(chunk => chunk.trim().length > 0);
 }
 
 processGuides().catch(console.error);

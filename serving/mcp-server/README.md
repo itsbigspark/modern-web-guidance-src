@@ -59,10 +59,10 @@ npx tsx scripts/demo-search.ts "fading in and growing an image as the user scrol
 #
 # Top Results:
 #
-# 1. [scroll-driven-animations] (ui) - Distance: 1.0939
+# 1. [scroll-driven-animations] (ui) - Distance: 0.7985
 #    Create animations linked to scroll position
 #
-# 2. [carousel] (ui) - Distance: 1.3641
+# 2. [carousel] (ui) - Distance: 1.1250
 #    Build responsive, accessible carousels with CSS Scroll Snap
 ```
 
@@ -78,11 +78,11 @@ npx tsx scripts/demo-search.ts "loading a low quality image placeholder on slow 
 #
 # Top Results:
 #
-# 1. [lazy-load-images] (webperf) - Distance: 0.7637
-#    Defer loading of off-screen images to minimize network contention and improve LCP.
-#
-# 2. [adaptive-loading] (webperf) - Distance: 0.8346
+# 1. [adaptive-loading] (webperf) - Distance: 0.8285
 #    Load a fallback image when network conditions are poor using the Adaptive Loading API
+#
+# 2. [lazy-load-images] (webperf) - Distance: 0.9499
+#    Defer loading of off-screen images to minimize network contention and improve LCP.
 ```
 
 ```bash
@@ -97,8 +97,11 @@ npx tsx scripts/demo-search.ts "showing a tooltip when hovering over a button"
 #
 # Top Results:
 #
-# 1. [tooltip] (ui) - Distance: 0.8149
+# 1. [tooltip] (ui) - Distance: 0.6308
 #    Create tooltips with Popover API and Interest Invokers
+#
+# 2. [color-systems] (ui) - Distance: 1.3888
+#    Create dynamic, accessible color systems using modern color syntax and relative colors
 ```
 
 ## Development

@@ -13,6 +13,7 @@ export interface UseCase {
   id: string;
   description: string;
   category: string;
+  chunkContent?: string;
   vector?: number[];
   distance?: number;
 }
@@ -55,17 +56,35 @@ export class Store {
       return [];
     }
 
+    // Fetch more results than needed to allow for deduplication
+    const fetchLimit = limit * 3;
+
     const results = await table.vectorSearch(queryVector)
-      .limit(limit)
+      .limit(fetchLimit)
       .toArray();
 
-    return results
-      .filter((r: any) => r._distance !== undefined && r._distance <= maxDistance)
-      .map((r: any) => ({
-        id: r.id,
-        description: r.description,
-        category: r.category,
-        distance: r._distance,
-      }));
+    const seenIds = new Set<string>();
+    const uniqueResults: UseCase[] = [];
+
+    for (const r of results) {
+      // @ts-ignore
+      const dist = r._distance;
+      if (dist === undefined || dist > maxDistance) continue;
+
+      if (seenIds.has(r.id)) continue;
+
+      seenIds.add(r.id);
+      uniqueResults.push({
+        id: r.id as string,
+        description: r.description as string,
+        category: r.category as string,
+        chunkContent: r.chunkContent as string,
+        distance: dist,
+      });
+
+      if (uniqueResults.length >= limit) break;
+    }
+
+    return uniqueResults;
   }
 }
