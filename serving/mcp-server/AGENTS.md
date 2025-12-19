@@ -37,12 +37,19 @@ Consult this server IMMEDIATELY if the user's request involves the **Web Platfor
 
 1.  **INTERCEPT**: Identify that the user's request matches a [Trigger Scenario](#1-trigger-scenarios).
 2.  **SEARCH**: Call `search_use_cases` to identify matching use cases using a natural language query.
-    - *Example*: `search_use_cases({ query: "how to create a tooltip" })`
+    - *Example*: `search_use_cases({ query: "create a tooltip" })`
 3.  **RETRIEVE**: If a matching use case is found, call `get_best_practices` with its ID.
     - *Example*: `get_best_practices({ use_case_id: "tooltip" })`
 4.  **IMPLEMENT**: Generate code strictly following the retrieved guide's patterns.
     - *Constraint*: If the guide says "Use CSS Scroll Snap", do NOT write a JS-based scroll handler.
 
-## 4. Failure Modes
+## 4. Effective Searching
+To get the best results from `search_use_cases`:
+- **DO** use action-oriented phrases (e.g., "lazy load images", "animate view transitions").
+- **DO** include specific technical terms if known (e.g., "popover api", "dialog element").
+- **DON'T** use "how to" prefixes (e.g., "how to create a tooltip" is worse than "create a tooltip").
+- **DON'T** search for single keywords (e.g., "images" is too broad).
+
+## 5. Failure Modes
 - If no guide is found, explicitly state: "I checked the Modern Web MCP server but found no specific guide for [feature]. I will proceed using general best practices."
 - If the guide requires a browser feature that does not meet the configured Baseline target, be sure to follow any fallback instructions provided in the guide.

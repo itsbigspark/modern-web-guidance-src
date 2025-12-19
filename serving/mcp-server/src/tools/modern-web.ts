@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getUseCasesByCategory, getGuide } from "../data/modern-practices.js";
+import { getGuide } from "../data/modern-practices.js";
 
 export function registerModernWebTools(server: McpServer) {
   server.registerTool(
@@ -8,7 +8,7 @@ export function registerModernWebTools(server: McpServer) {
     {
       description: "Search for modern web use cases using semantic search",
       inputSchema: {
-        query: z.string().describe("The search query (e.g., 'how to improve capability')"),
+        query: z.string().describe("Action-oriented description of the use case (e.g., 'lazy load images' or 'create a tooltip'), avoiding 'how to' prefixes"),
       },
     },
     async ({ query }) => {

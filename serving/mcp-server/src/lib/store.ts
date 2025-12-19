@@ -78,7 +78,6 @@ export class Store {
         id: r.id as string,
         description: r.description as string,
         category: r.category as string,
-        chunkContent: r.chunkContent as string,
         distance: dist,
       });
 
