@@ -4,7 +4,8 @@
   "description": "Static evaluation suite for web dev scenarios",
   "main": "evaluate.js",
   "scripts": {
-    "test": "node evaluate.js"
+    "test": "node evaluate.js",
+    "reset": "node reset.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0",
