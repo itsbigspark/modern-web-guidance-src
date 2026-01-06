@@ -77,7 +77,7 @@ export class Store {
         id: r.id as string,
         description: r.description as string,
         category: r.category as string,
-        distance: dist.toFixed(1),
+        distance: dist.toFixed(2),
       });
 
       if (uniqueResults.length >= limit) break;

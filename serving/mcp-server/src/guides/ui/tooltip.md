@@ -35,7 +35,7 @@ Use `interestfor` to declaratively build a hovercard using `popover`. Use CSS An
   Hover for popover
 </button>
 
-<div class="my-popover" popover="hint">
+<div id="my-popover" popover="hint">
   Hello world
 </div>
 ```
