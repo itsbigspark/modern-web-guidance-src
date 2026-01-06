@@ -89,20 +89,31 @@ async function main() {
     }
   }
 
-  // TODO: Maybe also clear out other artifact dirs like brain, browser_recordings, code_tracker, conversations, implicit...
-  const knowledgePath = '/Users/rviscomi/.gemini/jetski/knowledge';
-  if (!knowledgePath.endsWith('.gemini/jetski/knowledge')) {
-    console.error('Knowledge path is not valid:', knowledgePath);
-    process.exit(1);
-  }
-  const backupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jetski-knowledge-backup-'));
+  // Artifact directories to reset
+  const ARTIFACT_DIRS = [
+    'brain',
+    'browser_recordings',
+    'code_tracker',
+    'conversations',
+    'implicit',
+    'knowledge'
+  ];
+  const jetskiDir = '/Users/rviscomi/.gemini/jetski';
+  const backupBaseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jetski-artifacts-backup-'));
 
-  console.log(`\n=== Backing up Knowledge Base ===`);
-  console.log(`Source: ${knowledgePath}`);
-  console.log(`Backup: ${backupDir}`);
+  console.log(`\n=== Backing up Artifacts ===`);
+  console.log(`Source Root: ${jetskiDir}`);
+  console.log(`Backup Root: ${backupBaseDir}`);
 
   try {
-    await runCommand(`cp -R "${knowledgePath}" "${backupDir}"`);
+    for (const dirName of ARTIFACT_DIRS) {
+      const sourcePath = path.join(jetskiDir, dirName);
+      const destPath = path.join(backupBaseDir, dirName);
+      if (fs.existsSync(sourcePath)) {
+        console.log(`Backing up ${dirName}...`);
+        await runCommand(`cp -R "${sourcePath}" "${destPath}"`);
+      }
+    }
     console.log('✅ Backup successful');
 
     const endRun = startRun + NUM_RUNS;
@@ -141,8 +152,14 @@ async function main() {
           for (const agentType of AGENT_TYPES) {
             updateMcpConfig(agentType);
 
-            console.log('🧹 Clearing Knowledge Base for new run...');
-            await runCommand(`rm -rf "${knowledgePath}/"*`);
+            console.log('🧹 Clearing Artifacts for new run...');
+            for (const dirName of ARTIFACT_DIRS) {
+              const dirPath = path.join(jetskiDir, dirName);
+              // Only clear if it exists
+              if (fs.existsSync(dirPath)) {
+                await runCommand(`rm -rf "${dirPath}/"*`);
+              }
+            }
 
             const targetDir = path.join(runDir, scenario, promptType, agentType);
 
@@ -167,23 +184,33 @@ async function main() {
   } catch (e) {
     console.error('❌ Error during suite execution:', e);
   } finally {
-    console.log(`\n=== Restoring Knowledge Base ===`);
+    console.log(`\n=== Restoring Artifacts ===`);
 
     try {
-      await runCommand(`rm -rf "${knowledgePath}"`);
+      if (typeof ARTIFACT_DIRS !== 'undefined' && typeof jetskiDir !== 'undefined' && typeof backupBaseDir !== 'undefined') {
+        for (const dirName of ARTIFACT_DIRS) {
+          const sourcePath = path.join(jetskiDir, dirName);
+          const backupPath = path.join(backupBaseDir, dirName);
 
-      const backedUpKnowledge = path.join(backupDir, 'knowledge');
-      if (fs.existsSync(backedUpKnowledge)) {
-        await runCommand(`cp -R "${backedUpKnowledge}" "${knowledgePath}"`);
-      } else {
-        await runCommand(`cp -R "${backupDir}/"* "${knowledgePath}"`);
+          // Remove current state
+          if (fs.existsSync(sourcePath)) {
+            await runCommand(`rm -rf "${sourcePath}"`);
+          }
+
+          // Restore from backup if it existed
+          if (fs.existsSync(backupPath)) {
+            await runCommand(`cp -R "${backupPath}" "${sourcePath}"`);
+          }
+        }
+        console.log('✅ Restore successful');
+
+        fs.rmSync(backupBaseDir, { recursive: true, force: true });
       }
-      console.log('✅ Restore successful');
-
-      fs.rmSync(backupDir, { recursive: true, force: true });
     } catch (restoreErr) {
-      console.error('CRITICAL: Failed to restore knowledge base!', restoreErr);
-      console.error(`Backup should still be available at: ${backupDir}`);
+      console.error('CRITICAL: Failed to restore artifacts!', restoreErr);
+      if (typeof backupBaseDir !== 'undefined') {
+        console.error(`Backup should still be available at: ${backupBaseDir}`);
+      }
     }
   }
 }
