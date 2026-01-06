@@ -1,6 +1,6 @@
 {
   "summary": {
-    "unguidedMedian": 33,
+    "unguidedMedian": 25,
     "guidedMedian": 93,
     "numRuns": 3
   },
@@ -13,6 +13,11 @@
             "id": "redfield-declarative-interestfor",
             "passed": false,
             "message": "Refactored to use declarative interestfor attribute"
+          },
+          {
+            "id": "redfield-no-interesttarget",
+            "passed": false,
+            "message": "No interesttarget attribute detected"
           },
           {
             "id": "redfield-polyfill-present",
@@ -35,6 +40,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": false,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": false,
             "message": "Check for interestfor feature detection"
@@ -53,6 +63,11 @@
             "id": "redfield-declarative-interestfor",
             "passed": false,
             "message": "Refactored to use declarative interestfor attribute"
+          },
+          {
+            "id": "redfield-no-interesttarget",
+            "passed": false,
+            "message": "No interesttarget attribute detected"
           },
           {
             "id": "redfield-polyfill-present",
@@ -77,6 +92,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": true,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": true,
             "message": "Check for interestfor feature detection"
@@ -97,6 +117,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": true,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": false,
             "message": "Check for interestfor feature detection"
@@ -115,6 +140,11 @@
             "id": "redfield-declarative-interestfor",
             "passed": true,
             "message": "Refactored to use declarative interestfor attribute"
+          },
+          {
+            "id": "redfield-no-interesttarget",
+            "passed": true,
+            "message": "No interesttarget attribute detected"
           },
           {
             "id": "redfield-polyfill-present",
@@ -139,6 +169,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": false,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": false,
             "message": "Check for interestfor feature detection"
@@ -159,6 +194,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": false,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": false,
             "message": "Check for interestfor feature detection"
@@ -177,6 +217,11 @@
             "id": "redfield-declarative-interestfor",
             "passed": false,
             "message": "Refactored to use declarative interestfor attribute"
+          },
+          {
+            "id": "redfield-no-interesttarget",
+            "passed": false,
+            "message": "No interesttarget attribute detected"
           },
           {
             "id": "redfield-polyfill-present",
@@ -201,6 +246,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": true,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": true,
             "message": "Check for interestfor feature detection"
@@ -221,6 +271,11 @@
             "message": "Refactored to use declarative interestfor attribute"
           },
           {
+            "id": "redfield-no-interesttarget",
+            "passed": true,
+            "message": "No interesttarget attribute detected"
+          },
+          {
             "id": "redfield-polyfill-present",
             "passed": false,
             "message": "Check for interestfor feature detection"
@@ -239,6 +294,11 @@
             "id": "redfield-declarative-interestfor",
             "passed": true,
             "message": "Refactored to use declarative interestfor attribute"
+          },
+          {
+            "id": "redfield-no-interesttarget",
+            "passed": true,
+            "message": "No interesttarget attribute detected"
           },
           {
             "id": "redfield-polyfill-present",
@@ -1056,34 +1116,34 @@
       ]
     },
     "redfield - vague - unguided": {
-      "median": 33,
+      "median": 25,
       "rates": [
-        33,
-        33,
-        33
+        25,
+        25,
+        25
       ]
     },
     "redfield - vague - guided": {
-      "median": 67,
+      "median": 75,
       "rates": [
-        67,
-        67,
+        75,
+        75,
         100
       ]
     },
     "redfield - specific - unguided": {
-      "median": 33,
+      "median": 25,
       "rates": [
-        33,
-        33,
-        33
+        25,
+        25,
+        25
       ]
     },
     "redfield - specific - guided": {
-      "median": 67,
+      "median": 75,
       "rates": [
-        67,
-        67,
+        75,
+        75,
         100
       ]
     }

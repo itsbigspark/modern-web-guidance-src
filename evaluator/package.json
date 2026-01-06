@@ -7,7 +7,7 @@
     "test": "node evaluate.js",
     "reset": "node reset.js",
     "autorun": "node reset.js && node run_suite.js && node evaluate.js",
-    "dashboard": "node server.js"
+    "dashboard": "node evaluate.js && node server.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0",

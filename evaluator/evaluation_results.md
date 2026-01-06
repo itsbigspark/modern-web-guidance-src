@@ -3,7 +3,7 @@
 
 | Group | Median Pass Rate | Test Runs |
 |---|---|---|
-| **Unguided** | 33% | 3 |
+| **Unguided** | 25% | 3 |
 | **Guided** | 93% | 3 |
 
 ## GREENFIELD - VAGUE - UNGUIDED (Median: 14%)
@@ -118,51 +118,55 @@
 | ✅ | Speculation rules exclude /logout |
 | ✅ | No deprecated &lt;link rel=&quot;prerender&quot;&gt; tag found |
 
-## REDFIELD - VAGUE - UNGUIDED (Median: 33%)
+## REDFIELD - VAGUE - UNGUIDED (Median: 25%)
 
-**Pass rates across runs:** 33%, 33%, 33%
+**Pass rates across runs:** 25%, 25%, 25%
 
-### Run 1 Details (1/3)
-
-| Status | Expectation |
-|---|---|
-| ❌ | Refactored to use declarative interestfor attribute |
-| ❌ | Check for interestfor feature detection |
-| ✅ | No addEventListener(&quot;mouseover&quot;) detected |
-
-## REDFIELD - VAGUE - GUIDED (Median: 67%)
-
-**Pass rates across runs:** 67%, 67%, 100%
-
-### Run 2 Details (2/3)
-
-| Status | Expectation |
-|---|---|
-| ✅ | Refactored to use declarative interestfor attribute |
-| ❌ | Check for interestfor feature detection |
-| ✅ | No addEventListener(&quot;mouseover&quot;) detected |
-
-## REDFIELD - SPECIFIC - UNGUIDED (Median: 33%)
-
-**Pass rates across runs:** 33%, 33%, 33%
-
-### Run 1 Details (1/3)
+### Run 1 Details (1/4)
 
 | Status | Expectation |
 |---|---|
 | ❌ | Refactored to use declarative interestfor attribute |
+| ❌ | No interesttarget attribute detected |
 | ❌ | Check for interestfor feature detection |
 | ✅ | No addEventListener(&quot;mouseover&quot;) detected |
 
-## REDFIELD - SPECIFIC - GUIDED (Median: 67%)
+## REDFIELD - VAGUE - GUIDED (Median: 75%)
 
-**Pass rates across runs:** 67%, 67%, 100%
+**Pass rates across runs:** 75%, 75%, 100%
 
-### Run 2 Details (2/3)
+### Run 2 Details (3/4)
 
 | Status | Expectation |
 |---|---|
 | ✅ | Refactored to use declarative interestfor attribute |
+| ✅ | No interesttarget attribute detected |
+| ❌ | Check for interestfor feature detection |
+| ✅ | No addEventListener(&quot;mouseover&quot;) detected |
+
+## REDFIELD - SPECIFIC - UNGUIDED (Median: 25%)
+
+**Pass rates across runs:** 25%, 25%, 25%
+
+### Run 1 Details (1/4)
+
+| Status | Expectation |
+|---|---|
+| ❌ | Refactored to use declarative interestfor attribute |
+| ❌ | No interesttarget attribute detected |
+| ❌ | Check for interestfor feature detection |
+| ✅ | No addEventListener(&quot;mouseover&quot;) detected |
+
+## REDFIELD - SPECIFIC - GUIDED (Median: 75%)
+
+**Pass rates across runs:** 75%, 75%, 100%
+
+### Run 2 Details (3/4)
+
+| Status | Expectation |
+|---|---|
+| ✅ | Refactored to use declarative interestfor attribute |
+| ✅ | No interesttarget attribute detected |
 | ❌ | Check for interestfor feature detection |
 | ✅ | No addEventListener(&quot;mouseover&quot;) detected |
 

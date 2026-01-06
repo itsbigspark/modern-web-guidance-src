@@ -22,6 +22,13 @@ module.exports = function checkRedfield(dirPath, files) {
     message: 'Refactored to use declarative interestfor attribute'
   });
 
+  const buttonInterestTarget = $('button[interesttarget]');
+  results.push({
+    id: 'redfield-no-interesttarget',
+    passed: buttonInterestTarget.length === 0,
+    message: 'No interesttarget attribute detected'
+  });
+
   // 2. Imperative JS Removal (Heuristic)
   // We expect "less" imperative code or specific patterns to be gone.
   // The user says "Modernization: Agent removes imperative JavaScript code".

@@ -75,7 +75,20 @@ async function main() {
   const baseDir = __dirname;
   const setupDir = path.join(baseDir, 'setup');
   const testRunsDir = path.join(baseDir, 'test_runs');
-  
+
+  // Determine start run number based on existing runs
+  let startRun = 1;
+  if (fs.existsSync(testRunsDir)) {
+    const existingRuns = fs.readdirSync(testRunsDir)
+      .map(name => parseInt(name, 10))
+      .filter(num => !isNaN(num) && num > 0)
+      .sort((a, b) => a - b);
+
+    if (existingRuns.length > 0) {
+      startRun = existingRuns[existingRuns.length - 1] + 1;
+    }
+  }
+
   // TODO: Maybe also clear out other artifact dirs like brain, browser_recordings, code_tracker, conversations, implicit...
   const knowledgePath = '/Users/rviscomi/.gemini/jetski/knowledge';
   if (!knowledgePath.endsWith('.gemini/jetski/knowledge')) {
@@ -92,17 +105,20 @@ async function main() {
     await runCommand(`cp -R "${knowledgePath}" "${backupDir}"`);
     console.log('✅ Backup successful');
 
-    for (let runNumber = 1; runNumber <= NUM_RUNS; runNumber++) {
+    const endRun = startRun + NUM_RUNS;
+    console.log(`\nStarting execution from Run ${startRun} to ${endRun - 1} (Total ${NUM_RUNS} runs)`);
+
+    for (let runNumber = startRun; runNumber < endRun; runNumber++) {
       console.log(`\n${'='.repeat(60)}`);
-      console.log(`>>> STARTING RUN ${runNumber}/${NUM_RUNS} <<<`);
+      console.log(`>>> STARTING RUN ${runNumber} <<<`);
       console.log(`${'='.repeat(60)}\n`);
-      
+
       // Create run directory
       const runDir = path.join(testRunsDir, String(runNumber));
       if (!fs.existsSync(runDir)) {
         fs.mkdirSync(runDir, { recursive: true });
       }
-      
+
       // Copy setup directory contents to run directory
       console.log(`Copying setup to ${runDir}...`);
       await runCommand(`cp -R "${setupDir}/"* "${runDir}/"`);

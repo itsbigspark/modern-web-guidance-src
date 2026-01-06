@@ -18,6 +18,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.onclick = (event) => {
         if (event.target == modal) modal.classList.remove('show');
     }
+
+    // View Log Handler
+    const viewLogBtn = document.getElementById('view-log-btn');
+    if (viewLogBtn) {
+        viewLogBtn.onclick = async () => {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+
+            title.textContent = 'Full Run Log (run.log)';
+            body.innerHTML = '<div style="text-align:center; padding: 20px;">Loading log...</div>';
+            modal.classList.add('show');
+
+            try {
+                const res = await fetch('run.log');
+                if (!res.ok) throw new Error('Failed to fetch log');
+                const text = await res.text();
+                body.innerHTML = `<div class="log-content">${escapeHtml(text)}</div>`;
+            } catch (e) {
+                body.innerHTML = `<div style="color: var(--accent-failure); padding: 20px;">Error loading log: ${e.message}</div>`;
+            }
+        };
+    }
 });
 
 function renderSummary(data) {
