@@ -99,7 +99,7 @@ async function main() {
         let promptContent = fs.readFileSync(promptPath, 'utf8').trim();
         console.log(`\n=== Loaded Prompt for verify [${scenario} / ${promptType}] ===`);
 
-        promptContent += `\n\nDon't bother validating it in a browser.`;
+        promptContent += ` Don't bother doing any manual verification in a browser.`;
 
         for (const agentType of AGENT_TYPES) {
           updateMcpConfig(agentType);
