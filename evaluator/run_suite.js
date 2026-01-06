@@ -6,6 +6,7 @@ const { spawn } = require('child_process');
 const SCENARIOS = ['greenfield', 'brownfield', 'redfield'];
 const PROMPT_TYPES = ['specific', 'vague'];
 const AGENT_TYPES = ['guided', 'unguided'];
+const NUM_RUNS = 3;
 
 async function runCommand(command, args) {
   return new Promise((resolve, reject) => {
@@ -72,6 +73,10 @@ function updateMcpConfig(agentType) {
 
 async function main() {
   const baseDir = __dirname;
+  const setupDir = path.join(baseDir, 'setup');
+  const testRunsDir = path.join(baseDir, 'test_runs');
+  
+  // TODO: Maybe also clear out other artifact dirs like brain, browser_recordings, code_tracker, conversations, implicit...
   const knowledgePath = '/Users/rviscomi/.gemini/jetski/knowledge';
   if (!knowledgePath.endsWith('.gemini/jetski/knowledge')) {
     console.error('Knowledge path is not valid:', knowledgePath);
@@ -87,41 +92,58 @@ async function main() {
     await runCommand(`cp -R "${knowledgePath}" "${backupDir}"`);
     console.log('✅ Backup successful');
 
-    for (const scenario of SCENARIOS) {
-      for (const promptType of PROMPT_TYPES) {
-        const promptPath = path.join(baseDir, scenario, promptType, 'PROMPT.txt');
+    for (let runNumber = 1; runNumber <= NUM_RUNS; runNumber++) {
+      console.log(`\n${'='.repeat(60)}`);
+      console.log(`>>> STARTING RUN ${runNumber}/${NUM_RUNS} <<<`);
+      console.log(`${'='.repeat(60)}\n`);
+      
+      // Create run directory
+      const runDir = path.join(testRunsDir, String(runNumber));
+      if (!fs.existsSync(runDir)) {
+        fs.mkdirSync(runDir, { recursive: true });
+      }
+      
+      // Copy setup directory contents to run directory
+      console.log(`Copying setup to ${runDir}...`);
+      await runCommand(`cp -R "${setupDir}/"* "${runDir}/"`);
+      console.log('✅ Setup copied');
 
-        if (!fs.existsSync(promptPath)) {
-          console.warn(`WARNING: Prompt file not found at ${promptPath}. Skipping this prompt type.`);
-          continue;
-        }
+      for (const scenario of SCENARIOS) {
+        for (const promptType of PROMPT_TYPES) {
+          const promptPath = path.join(setupDir, scenario, promptType, 'PROMPT.txt');
 
-        let promptContent = fs.readFileSync(promptPath, 'utf8').trim();
-        console.log(`\n=== Loaded Prompt for verify [${scenario} / ${promptType}] ===`);
-
-        promptContent += ` Don't bother doing any manual verification in a browser.`;
-
-        for (const agentType of AGENT_TYPES) {
-          updateMcpConfig(agentType);
-
-          console.log('🧹 Clearing Knowledge Base for new run...');
-          await runCommand(`rm -rf "${knowledgePath}/"*`);
-
-          const targetDir = path.join(baseDir, scenario, promptType, agentType);
-
-          if (!fs.existsSync(targetDir)) {
-            console.warn(`WARNING: Target directory not found at ${targetDir}. Skipping.`);
+          if (!fs.existsSync(promptPath)) {
+            console.warn(`WARNING: Prompt file not found at ${promptPath}. Skipping this prompt type.`);
             continue;
           }
 
-          console.log(`\n>>> Running Scenario: ${scenario} | Prompt: ${promptType} | Agent: ${agentType}`);
-          console.log(`Target Dir: ${targetDir}`);
+          let promptContent = fs.readFileSync(promptPath, 'utf8').trim();
+          console.log(`\n=== Loaded Prompt for verify [${scenario} / ${promptType}] ===`);
 
-          try {
-            await runCommand('node', ['autorun.js', targetDir, JSON.stringify(promptContent)]);
-            console.log(`✅ Completed: ${scenario}/${promptType}/${agentType}`);
-          } catch (error) {
-            console.error(`❌ Failed: ${scenario}/${promptType}/${agentType}`, error);
+          promptContent += ` Don't bother doing any manual verification in a browser.`;
+
+          for (const agentType of AGENT_TYPES) {
+            updateMcpConfig(agentType);
+
+            console.log('🧹 Clearing Knowledge Base for new run...');
+            await runCommand(`rm -rf "${knowledgePath}/"*`);
+
+            const targetDir = path.join(runDir, scenario, promptType, agentType);
+
+            if (!fs.existsSync(targetDir)) {
+              console.warn(`WARNING: Target directory not found at ${targetDir}. Skipping.`);
+              continue;
+            }
+
+            console.log(`\n>>> Running Scenario: ${scenario} | Prompt: ${promptType} | Agent: ${agentType} | Run: ${runNumber}`);
+            console.log(`Target Dir: ${targetDir}`);
+
+            try {
+              await runCommand('node', ['autorun.js', targetDir, JSON.stringify(promptContent)]);
+              console.log(`✅ Completed: ${scenario}/${promptType}/${agentType} (Run ${runNumber})`);
+            } catch (error) {
+              console.error(`❌ Failed: ${scenario}/${promptType}/${agentType} (Run ${runNumber})`, error);
+            }
           }
         }
       }

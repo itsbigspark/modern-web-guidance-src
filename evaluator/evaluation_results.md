@@ -1,64 +1,78 @@
 # Evaluation Results
 
 
-| Group | Passing | Total | Rate |
-|---|---|---|---|
-| **Unguided** | 7 | 24 | 29% |
-| **Guided** | 15 | 24 | 63% |
+| Group | Median Pass Rate | Test Runs |
+|---|---|---|
+| **Unguided** | 33% | 3 |
+| **Guided** | 92% | 3 |
 
-## GREENFIELD - VAGUE - UNGUIDED (0/6)
+## GREENFIELD - VAGUE - UNGUIDED (Median: 14%)
 
-| Status | Expectation |
-|---|---|
-| ❌ | Found img with loading-placeholder attribute |
-| ❌ | Found button with interestfor attribute |
-| ❌ | JS contains interestfor feature detection |
-| ❌ | JS contains loading-placeholder feature detection |
-| ❌ | CSS uses animation-timeline: view() |
-| ❌ | CSS respects prefers-reduced-motion |
+**Pass rates across runs:** 0%, 14%, 14%
 
-## GREENFIELD - VAGUE - GUIDED (3/6)
-
-| Status | Expectation |
-|---|---|
-| ❌ | Found img with loading-placeholder attribute |
-| ✅ | Found button with interestfor attribute |
-| ❌ | JS contains interestfor feature detection |
-| ❌ | JS contains loading-placeholder feature detection |
-| ✅ | CSS uses animation-timeline: view() |
-| ✅ | CSS respects prefers-reduced-motion |
-
-## GREENFIELD - SPECIFIC - UNGUIDED (1/6)
+### Run 2 Details (1/7)
 
 | Status | Expectation |
 |---|---|
 | ❌ | Found img with loading-placeholder attribute |
 | ❌ | Found button with interestfor attribute |
+| ❌ | Found deprecated interesttarget attribute (should be interestfor) |
 | ❌ | JS contains interestfor feature detection |
 | ❌ | JS contains loading-placeholder feature detection |
 | ✅ | CSS uses animation-timeline: view() |
 | ❌ | CSS respects prefers-reduced-motion |
 
-## GREENFIELD - SPECIFIC - GUIDED (3/6)
+## GREENFIELD - VAGUE - GUIDED (Median: 100%)
+
+**Pass rates across runs:** 67%, 100%, 100%
+
+### Run 1 Details (6/6)
 
 | Status | Expectation |
 |---|---|
 | ✅ | Found img with loading-placeholder attribute |
 | ✅ | Found button with interestfor attribute |
+| ✅ | JS contains interestfor feature detection |
+| ✅ | JS contains loading-placeholder feature detection |
+| ✅ | CSS uses animation-timeline: view() |
+| ✅ | CSS respects prefers-reduced-motion |
+
+## GREENFIELD - SPECIFIC - UNGUIDED (Median: 14%)
+
+**Pass rates across runs:** 0%, 14%, 14%
+
+### Run 1 Details (1/7)
+
+| Status | Expectation |
+|---|---|
+| ❌ | Found img with loading-placeholder attribute |
+| ❌ | Found button with interestfor attribute |
+| ❌ | Found deprecated interesttarget attribute (should be interestfor) |
 | ❌ | JS contains interestfor feature detection |
 | ❌ | JS contains loading-placeholder feature detection |
 | ✅ | CSS uses animation-timeline: view() |
 | ❌ | CSS respects prefers-reduced-motion |
 
-## BROWNFIELD - VAGUE - UNGUIDED (2/3)
+## GREENFIELD - SPECIFIC - GUIDED (Median: 83%)
+
+**Pass rates across runs:** 33%, 83%, 83%
+
+### Run 1 Details (5/6)
 
 | Status | Expectation |
 |---|---|
-| ✅ | Found &lt;script type=&quot;speculationrules&quot;&gt; |
-| ❌ | Speculation rules exclude /logout |
-| ✅ | No deprecated &lt;link rel=&quot;prerender&quot;&gt; tag found |
+| ✅ | Found img with loading-placeholder attribute |
+| ✅ | Found button with interestfor attribute |
+| ✅ | JS contains interestfor feature detection |
+| ✅ | JS contains loading-placeholder feature detection |
+| ✅ | CSS uses animation-timeline: view() |
+| ❌ | CSS respects prefers-reduced-motion |
 
-## BROWNFIELD - VAGUE - GUIDED (3/3)
+## BROWNFIELD - VAGUE - UNGUIDED (Median: 100%)
+
+**Pass rates across runs:** 100%, 100%, 100%
+
+### Run 1 Details (3/3)
 
 | Status | Expectation |
 |---|---|
@@ -66,7 +80,23 @@
 | ✅ | Speculation rules exclude /logout |
 | ✅ | No deprecated &lt;link rel=&quot;prerender&quot;&gt; tag found |
 
-## BROWNFIELD - SPECIFIC - UNGUIDED (2/3)
+## BROWNFIELD - VAGUE - GUIDED (Median: 100%)
+
+**Pass rates across runs:** 100%, 100%, 100%
+
+### Run 1 Details (3/3)
+
+| Status | Expectation |
+|---|---|
+| ✅ | Found &lt;script type=&quot;speculationrules&quot;&gt; |
+| ✅ | Speculation rules exclude /logout |
+| ✅ | No deprecated &lt;link rel=&quot;prerender&quot;&gt; tag found |
+
+## BROWNFIELD - SPECIFIC - UNGUIDED (Median: 67%)
+
+**Pass rates across runs:** 67%, 67%, 67%
+
+### Run 1 Details (2/3)
 
 | Status | Expectation |
 |---|---|
@@ -74,15 +104,23 @@
 | ❌ | Speculation rules exclude /logout |
 | ✅ | No deprecated &lt;link rel=&quot;prerender&quot;&gt; tag found |
 
-## BROWNFIELD - SPECIFIC - GUIDED (2/3)
+## BROWNFIELD - SPECIFIC - GUIDED (Median: 100%)
+
+**Pass rates across runs:** 67%, 100%, 100%
+
+### Run 1 Details (3/3)
 
 | Status | Expectation |
 |---|---|
 | ✅ | Found &lt;script type=&quot;speculationrules&quot;&gt; |
-| ❌ | Speculation rules exclude /logout |
+| ✅ | Speculation rules exclude /logout |
 | ✅ | No deprecated &lt;link rel=&quot;prerender&quot;&gt; tag found |
 
-## REDFIELD - VAGUE - UNGUIDED (1/3)
+## REDFIELD - VAGUE - UNGUIDED (Median: 33%)
+
+**Pass rates across runs:** 33%, 33%, 33%
+
+### Run 1 Details (1/3)
 
 | Status | Expectation |
 |---|---|
@@ -90,7 +128,11 @@
 | ❌ | Check for interestfor feature detection |
 | ✅ | No addEventListener(&quot;mouseover&quot;) detected |
 
-## REDFIELD - VAGUE - GUIDED (2/3)
+## REDFIELD - VAGUE - GUIDED (Median: 67%)
+
+**Pass rates across runs:** 67%, 67%, 100%
+
+### Run 2 Details (2/3)
 
 | Status | Expectation |
 |---|---|
@@ -98,7 +140,11 @@
 | ❌ | Check for interestfor feature detection |
 | ✅ | No addEventListener(&quot;mouseover&quot;) detected |
 
-## REDFIELD - SPECIFIC - UNGUIDED (1/3)
+## REDFIELD - SPECIFIC - UNGUIDED (Median: 33%)
+
+**Pass rates across runs:** 33%, 33%, 33%
+
+### Run 1 Details (1/3)
 
 | Status | Expectation |
 |---|---|
@@ -106,7 +152,11 @@
 | ❌ | Check for interestfor feature detection |
 | ✅ | No addEventListener(&quot;mouseover&quot;) detected |
 
-## REDFIELD - SPECIFIC - GUIDED (2/3)
+## REDFIELD - SPECIFIC - GUIDED (Median: 67%)
+
+**Pass rates across runs:** 67%, 67%, 100%
+
+### Run 2 Details (2/3)
 
 | Status | Expectation |
 |---|---|
