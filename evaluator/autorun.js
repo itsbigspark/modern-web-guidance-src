@@ -94,7 +94,7 @@ async function run() {
     const cancelButtonSelector = '[data-tooltip-id="input-send-button-cancel-tooltip"]';
     const allowOnceButtonSelector = 'button[aria-label="Allow once"]';
 
-    const iframeSelector = '#antigravity\\.agentPanel';
+    const iframeSelector = '#antigravity\\.agentPanel, #antigravity\\.cascadePanel';
 
     console.log(`Waiting for Agent Panel iframe...`);
     let targetFrame = null;
