@@ -58,7 +58,7 @@ Baseline status: Limited availability
 
 Baseline status: Newly available since 2025-01-27
 
-- **DO** use `HTMLDivElement.prototype.hasOwnProperty("popover")` for feature detection
+- **DO** use `HTMLElement.prototype.hasOwnProperty("popover")` for feature detection
 - **DO** conditionally load the polyfill if and only if the browser fails the feature detection check
 - **DO** download a local copy of the polyfill at https://unpkg.com/@oddbird/popover-polyfill@0.6.1/dist/popover.min.js or `npm install @oddbird/popover-polyfill`
 
