@@ -6,7 +6,7 @@ export function registerModernWebTools(server: McpServer) {
   server.registerTool(
     "search_use_cases",
     {
-      description: "MANDATORY: Execute this FIRST for each and every web development use case, especially for writing modern web code. Returns use case IDs. You MUST subsequently call 'get_best_practices' with the most relevant ID to get the implementation guide.",
+      description: "MANDATORY: Execute this FIRST for each and every web development use case, even if you're implementing that use case in a framework like React, especially for writing modern web code. Returns use case IDs and descriptions. You MUST subsequently call 'get_best_practices' with the most relevant ID to get the implementation guide.",
       inputSchema: {
         query: z.string().describe("Action-oriented description of the desired use case (e.g., 'lazy load images' or 'create a tooltip'). Avoid 'how to' questions and single-keyword queries (e.g. 'images')."),
       },
@@ -35,7 +35,7 @@ export function registerModernWebTools(server: McpServer) {
   server.registerTool(
     "get_best_practices",
     {
-      description: "MANDATORY: After finding a relevant 'use_case_id' from 'search_use_cases', call this tool to retrieve the complete, actionable implementation guide. Do not guess or hallucinate APIs; you must use the patterns in this guide.",
+      description: "MANDATORY: After finding a relevant 'use_case_id' from 'search_use_cases', call this tool to retrieve the complete, actionable implementation guide. This guidance is framework-agnostic; adapt it to whatever library or framework is being used. Do not guess or hallucinate APIs; you must use the patterns in this guide.",
       inputSchema: {
         use_case_id: z.string().describe("The exact 'id' from the search_use_cases result (e.g. 'tooltip')."),
       },
