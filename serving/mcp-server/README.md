@@ -26,7 +26,7 @@ pnpm install
 
 ### 2. Build & Initialize Database
 
-This project uses a local **LanceDB** vector database to power its semantic search capabilities. The database is built from the source markdown guides located in `src/guides`.
+This project uses a local **LanceDB** vector database to power its semantic search capabilities. The database is built from the source markdown guides located in `mcp-server/guides/`..
 
 You **MUST** run the build script before starting the server. This script does two things:
 1.  Generates the vector embeddings and populates `/.mcp-data/`.
@@ -164,10 +164,10 @@ git pull origin main
 pnpm publish
     ```
     *   The `prepublishOnly` script will automatically run `pnpm run build` to regenerate the vector database in `.mcp-data/` and compile the code.
-    *   The `files` allowlist in `package.json` ensures that `.mcp-data/` and `build/` are included in the tarball, while `src/` is excluded.
+    *   The `files` allowlist in `package.json` ensures that `.mcp-data/` and `build/` are included in the tarball, while `src/`source files are excluded.
 ## Architecture
 
-- **`src/guides/`**: Source markdown files containing web development patterns.
+- **`mcp-server/guides/` (flattened to `mcp-server/guides/`)**: Source markdown files containing web development patterns.
 - **`scripts/build-guides.ts`**: The build script that parses guides, generates embeddings, and updates the LanceDB instance.
 - **`.mcp-data/`**: The local directory where the LanceDB vector store is persisted (gitignored but published to npm).
 - **`build/`**: The directory where the compiled code is stored (gitignored but published to npm).

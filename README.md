@@ -40,7 +40,7 @@ pnpm run dashboard # Starts a local server to view results
 ## Development
 
 This repository is managed as a monorepo. When contributing:
-- Add new implementation guides to `serving/mcp-server/src/guides/`.
+- Add new implementation guides to `serving/mcp-server/guides/`.
 - Add new evaluation scenarios or checks to `evaluator/setup/` and `evaluator/checks/`.
 
 ## License
