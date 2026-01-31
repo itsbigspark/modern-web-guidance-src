@@ -18,6 +18,8 @@ An Model Context Protocol (MCP) server that provides access to modern web develo
 
 ### 1. Install Dependencies
 
+From the project root:
+
 ```bash
 pnpm install
 ```

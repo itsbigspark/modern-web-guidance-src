@@ -9,13 +9,18 @@ A unified repository for modern web development guidance, containing both an MCP
 
 ## Getting Started
 
+This project is managed as a **pnpm workspace**. You can install all dependencies for both the MCP server and the evaluator with a single command from the root:
+
+```bash
+pnpm install
+```
+
 ### 1. Modern Web MCP (Serving)
 
 The MCP server allows AI agents to access high-quality implementation patterns and browser compatibility data.
 
 ```bash
 cd serving
-pnpm install
 pnpm run build  # Generates the vector database and compiles code
 pnpm start
 ```
@@ -28,7 +33,6 @@ The evaluator suite measures how effectively AI models use modern web APIs in va
 
 ```bash
 cd evaluator
-pnpm install
 pnpm run autorun  # Runs the full test suite and evaluation
 pnpm run dashboard # Starts a local server to view results
 ```
