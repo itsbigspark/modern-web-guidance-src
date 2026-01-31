@@ -1,0 +1,16 @@
+{
+  "name": "harness",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node evaluate.js",
+    "autorun": "node run_suite.js && node evaluate.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "colors": "^1.4.0",
+    "dotenv": "^16.4.7",
+    "glob": "^10.4.5",
+    "puppeteer-core": "^24.34.0"
+  }
+}

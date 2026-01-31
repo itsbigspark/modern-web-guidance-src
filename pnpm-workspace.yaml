@@ -1,9 +1,4 @@
 packages:
-  - serving
-  - evaluator
-
-onlyBuiltDependencies:
-  - esbuild
-  - onnxruntime-node
-  - protobufjs
-  - sharp
+  - 'serving'
+  - 'harness'
+  - 'eval-view'

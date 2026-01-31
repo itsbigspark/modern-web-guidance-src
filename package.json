@@ -8,7 +8,8 @@
     "test": "pnpm -r test",
     "lint": "oxlint -A no-unused-vars --ignore-path .oxlintignore",
     "typecheck": "pnpm --filter modern-web-mcp run typecheck",
-    "preflight": "pnpm run typecheck && pnpm run lint && pnpm run test"
+    "preflight": "pnpm run typecheck && pnpm run lint && pnpm run test",
+    "dashboard": "pnpm --filter eval-view run start"
   },
   "keywords": [],
   "author": "",
