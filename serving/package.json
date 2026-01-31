@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "An MCP server for modern web development",
   "type": "module",
-  "main": "build/index.js",
+  "main": "mcp-server/index.ts",
   "exports": {
-    ".": "./build/index.js",
-    "./lib": "./build/lib.js"
+    ".": "./mcp-server/index.ts",
+    "./lib": "./mcp-server/lib.ts"
   },
   "files": [
     "build",
@@ -16,9 +16,9 @@
   ],
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "tsx scripts/build-guides.ts && tsc && cp AGENTS.md build/",
-    "start": "node build/mcp-server/index.js",
-    "dev": "tsx scripts/build-guides.ts && tsx mcp-server/index.ts",
+    "build": "tsx scripts/build-guides.ts",
+    "start": "node mcp-server/index.ts",
+    "dev": "tsx scripts/build-guides.ts && node --watch mcp-server/index.ts",
     "test": "tsx scripts/build-guides.ts && vitest run mcp-server/",
     "typecheck": "tsc --noEmit"
   },

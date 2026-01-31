@@ -1,6 +1,6 @@
 
 import { describe, it, expect } from "vitest";
-import { getGuide } from "./modern-practices.js";
+import { getGuide } from "./modern-practices.ts";
 import path from "path";
 
 describe("getGuide", () => {

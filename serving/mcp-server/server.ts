@@ -1,5 +1,5 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerModernWebTools } from "./tools/modern-web.js";
+import { registerModernWebTools } from "./tools/modern-web.ts";
 import { promises as fs } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

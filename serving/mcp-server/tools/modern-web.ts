@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getGuide } from "../data/modern-practices.js";
+import { getGuide } from "../data/modern-practices.ts";
 
 export function registerModernWebTools(server: McpServer) {
   server.registerTool(

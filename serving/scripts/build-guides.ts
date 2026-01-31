@@ -3,8 +3,8 @@ import path from "path";
 import matter from "gray-matter";
 import { fileURLToPath } from "url";
 import { marked } from "marked";
-import { Embedder } from "../mcp-server/lib/embedder.js";
-import { Store, type UseCase as StoreUseCase } from "../mcp-server/lib/store.js";
+import { Embedder } from "../mcp-server/lib/embedder.ts";
+import { Store, type UseCase as StoreUseCase } from "../mcp-server/lib/store.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

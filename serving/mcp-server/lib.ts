@@ -1,4 +1,4 @@
-export { getUseCasesByCategory, getGuide } from "./data/modern-practices.js";
-export type { UseCase } from "./data/modern-practices.js";
-export { getBaselineStatus, resolveFeatureId, getStatus } from "./data/baseline.js";
-export type { BaselineStatus } from "./data/baseline.js";
+export { getUseCasesByCategory, getGuide } from "./data/modern-practices.ts";
+export type { UseCase } from "./data/modern-practices.ts";
+export { getBaselineStatus, resolveFeatureId, getStatus } from "./data/baseline.ts";
+export type { BaselineStatus } from "./data/baseline.ts";
