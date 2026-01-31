@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "id": "test_2026-01-06T23-07-34",
+      "timestamp": "2026-01-07T00:33:05.689Z",
+      "runCount": 3
+    },
+    {
+      "id": "test_2026-01-07T00-33-21",
+      "timestamp": "2026-01-07T01:31:04.923Z",
+      "runCount": 3
+    },
+    {
+      "id": "test_2026-01-07T15-03-07",
+      "timestamp": "2026-01-07T16:13:49.005Z",
+      "runCount": 3
+    },
+    {
+      "id": "skills",
+      "timestamp": "2026-01-16T14:36:47.531Z",
+      "runCount": 3
+    },
+    {
+      "id": "smoke-test-fast-mode",
+      "timestamp": "2026-01-21T15:57:50.175Z",
+      "runCount": 3
+    },
+    {
+      "id": "smoke-test-planning-mode",
+      "timestamp": "2026-01-21T19:47:27.309Z",
+      "runCount": 3
+    },
+    {
+      "id": "smoke-test-skills",
+      "timestamp": "2026-01-24T01:08:07.391Z",
+      "runCount": 3
+    },
+    {
+      "id": "react",
+      "timestamp": "2026-01-29T01:16:45.045Z",
+      "runCount": 3
+    }
+  ]
+}
