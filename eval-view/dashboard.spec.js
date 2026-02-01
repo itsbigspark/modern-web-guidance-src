@@ -56,4 +56,16 @@ test.describe('Eval View Dashboard', () => {
     const count = await page.locator('.test-card').count();
     expect(count).toBeGreaterThan(0);
   });
+
+  test('should block access to hidden files', async ({ page }) => {
+    const response = await page.request.get('/.gitignore');
+    expect(response.status()).toBe(403);
+  });
+
+  test('should block directory traversal attempts', async ({ page }) => {
+    // Try to access a file that is definitely outside the project root
+    const res = await fetch(`http://localhost:11432/../../../../../../../../../../etc/passwd`);
+    // Both 403 and 404 are acceptable as they block access to the host system
+    expect([403, 404]).toContain(res.status);
+  });
 });

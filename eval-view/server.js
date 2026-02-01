@@ -19,28 +19,68 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  console.log(`${req.method} ${req.url}`);
+  // Ultra-strict raw URL check
+  if (req.url.includes('..') || req.url.toLowerCase().includes('%2e')) {
+    console.log(`403 Forbidden: Traversal/Encoded attempt - ${req.method} ${req.url}`);
+    res.writeHead(403);
+    res.end('403 Forbidden: Directory traversal is not allowed');
+    return;
+  }
 
-  // Normalize URL to file path
-  let filePath = '.' + req.url;
+  // Normalize the URL and decode components for security checks
+  const urlPath = req.url.split('?')[0];
+  const decodedPath = decodeURIComponent(urlPath);
+  console.log(`Incoming request: ${req.method} ${req.url} (path: ${urlPath}, decoded: ${decodedPath})`);
   
-  // Default to index.html for root
-  if (filePath === './') {
-    filePath = './index.html';
+  // Block directory traversal attempts
+  if (decodedPath.includes('..')) {
+    console.log(`403 Forbidden: Traversal attempt - ${req.method} ${req.url}`);
+    res.writeHead(403);
+    res.end('403 Forbidden: Directory traversal is not allowed');
+    return;
   }
 
+  // Explicitly block hidden files (starting with dot)
+  if (decodedPath.split('/').some(part => part.startsWith('.'))) {
+    console.log(`403 Forbidden: Hidden file access - ${req.method} ${req.url}`);
+    res.writeHead(403);
+    res.end('403 Forbidden: Access to hidden files is not allowed');
+    return;
+  }
+
+  let filePath;
   // Map results and setup to the harness directory
-  if (req.url.startsWith('/results/')) {
-    filePath = path.join('../harness/results', req.url.substring(9));
-  } else if (req.url.startsWith('/setup/')) {
-    filePath = path.join('../harness/setup', req.url.substring(7));
+  if (decodedPath.startsWith('/results/')) {
+    filePath = path.join('../harness/results', decodedPath.substring(9));
+  } else if (decodedPath.startsWith('/setup/')) {
+    filePath = path.join('../harness/setup', decodedPath.substring(7));
+  } else {
+    // Default to serving from current directory (eval-view)
+    // Remove leading slash to ensure path.join treats it as relative to '.'
+    const relativePath = decodedPath.startsWith('/') ? decodedPath.substring(1) : decodedPath;
+    filePath = path.join('.', relativePath);
+    if (decodedPath === '/' || decodedPath === '') {
+      filePath = './index.html';
+    }
   }
 
-  // Remove query string if present
-  const queryIndex = filePath.indexOf('?');
-  if (queryIndex !== -1) {
-    filePath = filePath.substring(0, queryIndex);
+  // Final check: Resolve the absolute path and ensure it's within allowed directories
+  const absolutePath = path.resolve(filePath);
+  const evalViewRoot = path.resolve('.');
+  const harnessRoot = path.resolve('../harness');
+  
+  // Use path.sep to ensure we match whole directory names
+  const isInsideEvalView = absolutePath === evalViewRoot || absolutePath.startsWith(evalViewRoot + path.sep);
+  const isInsideHarness = absolutePath === harnessRoot || absolutePath.startsWith(harnessRoot + path.sep);
+
+  if (!isInsideEvalView && !isInsideHarness) {
+    console.log(`403 Forbidden: Access outside allowed directories - ${req.method} ${req.url} -> ${absolutePath}`);
+    res.writeHead(403);
+    res.end('403 Forbidden: Access outside allowed directories is not allowed');
+    return;
   }
+
+  console.log(`${req.method} ${req.url} -> ${filePath}`);
 
   const extname = path.extname(filePath);
   let contentType = MIME_TYPES[extname] || 'application/octet-stream';

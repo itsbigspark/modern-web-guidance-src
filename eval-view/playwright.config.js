@@ -22,7 +22,7 @@ export default defineConfig({
     command: 'PORT=11432 NO_OPEN=true node server.js',
     url: 'http://localhost:11432',
     reuseExistingServer: !process.env.CI,
-    stdout: 'ignore',
+    stdout: 'pipe',
     stderr: 'pipe',
   },
 });
