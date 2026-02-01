@@ -28,9 +28,32 @@ test.describe('Eval View Dashboard', () => {
 
   test('should navigate to explorer tab', async ({ page }) => {
     await page.goto('/');
+    // Wait for data to be loaded (overview cards appear)
+    await expect(page.locator('#latest-guided-metric')).not.toContainText('-');
+    
     await page.click('.tab-button[data-tab="explorer"]');
     
     await expect(page.locator('#explorer-tab')).toHaveClass(/active/);
     await expect(page.locator('.explorer-sidebar')).toBeVisible();
+  });
+
+  test('should load specific test dashboard', async ({ page }) => {
+    await page.goto('/dashboard.html?testID=react');
+
+    // Check title
+    await expect(page.locator('h1')).toContainText('Eval Dashboard');
+
+    // Check header info
+    await expect(page.locator('#test-header')).toContainText('react');
+
+    // Check grid exists and has content
+    await expect(page.locator('#dashboard-grid')).toBeVisible();
+    
+    // Wait for actual cards to be rendered by JS
+    const firstCard = page.locator('.test-card').first();
+    await expect(firstCard).toBeVisible();
+    
+    const count = await page.locator('.test-card').count();
+    expect(count).toBeGreaterThan(0);
   });
 });
