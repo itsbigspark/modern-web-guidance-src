@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node evaluate.js",
-    "autorun": "node run_suite.js && node evaluate.js"
+    "test": "node --test lib/*.test.js",
+    "evaluate": "node evaluate.js",
+    "run-suite": "node run_suite.js",
+    "autorun": "npm run run-suite && npm run evaluate"
   },
   "dependencies": {
     "cheerio": "^1.0.0",
