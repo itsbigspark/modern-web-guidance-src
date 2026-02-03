@@ -95,4 +95,49 @@ describe("Server Resource Registration", () => {
       expect.any(Function)
     );
   });
+
+  describe("Tool Handlers Functional Tests", () => {
+    it("get_usage_guide should return AGENTS.md content", async () => {
+      const { createServer } = await import("./server.js");
+      const server = createServer();
+
+      const getUsageGuideCall = (server.registerTool as any).mock.calls.find(
+        (call: any[]) => call[0] === "get_usage_guide"
+      );
+      const handler = getUsageGuideCall[2];
+
+      const result = await handler({});
+      expect(result.content[0].type).toBe("text");
+      expect(result.content[0].text).toContain("Build-Free TypeScript Execution");
+    });
+
+    it("search_use_cases should return results", async () => {
+      const { createServer } = await import("./server.js");
+      const server = createServer();
+
+      const searchCall = (server.registerTool as any).mock.calls.find(
+        (call: any[]) => call[0] === "search_use_cases"
+      );
+      const handler = searchCall[2];
+
+      const result = await handler({ query: "tooltip" });
+      expect(result.content[0].type).toBe("text");
+      const data = JSON.parse(result.content[0].text);
+      expect(Array.isArray(data)).toBe(true);
+    });
+
+    it("get_best_practices should return guide content", async () => {
+      const { createServer } = await import("./server.js");
+      const server = createServer();
+
+      const getPracticesCall = (server.registerTool as any).mock.calls.find(
+        (call: any[]) => call[0] === "get_best_practices"
+      );
+      const handler = getPracticesCall[2];
+
+      const result = await handler({ use_case_id: "tooltip" });
+      expect(result.content[0].type).toBe("text");
+      expect(result.content[0].text).toContain("Tooltip");
+    });
+  });
 });

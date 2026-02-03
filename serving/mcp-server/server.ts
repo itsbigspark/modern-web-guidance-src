@@ -34,7 +34,9 @@ export function createServer() {
     async (uri, { _request }) => {
       const possiblePaths = [
         path.resolve(__dirname, "AGENTS.md"), // In build/
+        path.resolve(__dirname, "AGENTS.guidance.md"),
         path.resolve(__dirname, "../AGENTS.md"), // In root (dev fallback)
+        path.resolve(__dirname, "../AGENTS.guidance.md"),
       ];
 
       let content: string | null = null;
@@ -72,7 +74,9 @@ export function createServer() {
     async () => {
       const possiblePaths = [
         path.resolve(__dirname, "AGENTS.md"), // In build/
+        path.resolve(__dirname, "AGENTS.guidance.md"),
         path.resolve(__dirname, "../AGENTS.md"), // In root (dev fallback)
+        path.resolve(__dirname, "../AGENTS.guidance.md"),
       ];
 
       let content: string | null = null;

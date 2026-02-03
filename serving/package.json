@@ -16,10 +16,10 @@
   ],
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "tsx scripts/build-guides.ts",
+    "build": "node scripts/build-guides.ts",
     "start": "node mcp-server/index.ts",
-    "dev": "tsx scripts/build-guides.ts && node --watch mcp-server/index.ts",
-    "test": "tsx scripts/build-guides.ts && vitest run mcp-server/",
+    "dev": "node scripts/build-guides.ts && node --watch mcp-server/index.ts",
+    "test": "node scripts/build-guides.ts && vitest run mcp-server/",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
