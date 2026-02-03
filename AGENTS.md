@@ -25,7 +25,7 @@ You are working in the `guidance` monorepo, which defines and evaluates modern w
 ## Operational Rules
 
 1. **Workspaces**: This is a `pnpm` workspace. Always run `pnpm install` from the root.
-2. **Updating Guidance**: If you modify files in `serving/mcp-server/guides/`, you **MUST** run `pnpm --filter serving run build` to regenerate the vector database (`.mcp-data/`).
+2. **Updating Guidance**: If you modify files in `serving/mcp-server/guides/`, you **MUST** run `pnpm build:mcp` to regenerate the vector database (`.mcp-data/`).
 3. **Testing**:
-   - Serving: `pnpm --filter serving test`.
-   - Evaluator: `cd evaluator && pnpm run autorun`.
+   - Serving: `pnpm test:mcp`.
+   - Evaluator: `pnpm autorun`.

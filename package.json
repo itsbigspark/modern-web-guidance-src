@@ -7,10 +7,14 @@
   "scripts": {
     "test": "pnpm -r test",
     "lint": "oxlint -A no-unused-vars --ignore-path .oxlintignore",
-    "typecheck": "pnpm --filter modern-web-mcp run typecheck",
-    "preflight": "pnpm run typecheck && pnpm run lint && pnpm run test",
-    "evaluate": "pnpm --filter harness run evaluate",
-    "dashboard": "pnpm --filter eval-view run start"
+    "typecheck": "pnpm --filter modern-web-mcp typecheck",
+    "preflight": "pnpm typecheck && pnpm lint && pnpm test",
+    "evaluate": "pnpm --filter harness evaluate",
+    "autorun": "pnpm --filter harness autorun",
+    "dashboard": "pnpm --filter eval-view start",
+    "build:mcp": "pnpm --filter modern-web-mcp build",
+    "test:mcp": "pnpm --filter modern-web-mcp test",
+    "setup:playwright": "pnpm --filter eval-view exec playwright install"
   },
   "keywords": [],
   "author": "",

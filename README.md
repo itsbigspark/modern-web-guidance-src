@@ -14,7 +14,7 @@ This project is managed as a **pnpm workspace**. You can install all dependencie
 
 ```bash
 pnpm install
-pnpm --filter eval-view exec playwright install
+pnpm setup:playwright
 ```
 
 ### 1. Modern Web MCP (Serving)
@@ -34,10 +34,10 @@ The evaluation suite measures how effectively AI models use modern web APIs.
 
 ```bash
 # To run the evaluation harness
-pnpm --filter harness run autorun
+pnpm autorun
 
 # To view the results in the dashboard
-pnpm run dashboard
+pnpm dashboard
 ```
 
 ## Quality Control
@@ -45,7 +45,7 @@ pnpm run dashboard
 Run the full preflight suite (typechecking, linting, and tests) from the root:
 
 ```bash
-pnpm run preflight
+pnpm preflight
 ```
 
 ## Development
