@@ -94,6 +94,7 @@ async function startJetski(directory) {
   console.log(`Starting Jetski with directory: ${directory}`);
   const jetskiProcess = spawn(config.jetskiBin, [
     `--remote-debugging-port=${config.jetskiDebugPort}`,
+    '--password-store=basic',
     directory
   ], {
     detached: true, // Let it run independently
@@ -101,6 +102,27 @@ async function startJetski(directory) {
   });
 
   jetskiProcess.unref(); // Don't wait for it to exit
+
+  // Background task to dismiss the keychain dialog
+  const appleScript = `
+    tell application "System Events"
+      repeat 15 times
+        set found to false
+        -- SecurityAgent is the system process that owns this dialog
+        if exists (process "SecurityAgent") then
+          try
+            if exists (window "Keychain Not Found" of process "SecurityAgent") then
+              click button "Cancel" of window "Keychain Not Found" of process "SecurityAgent"
+              set found to true
+            end if
+          end try
+        end if
+        if found then exit repeat
+        delay 1
+      end repeat
+    end tell
+  `;
+  spawn('osascript', ['-e', appleScript], { detached: true, stdio: 'ignore' }).unref();
 
   // Wait for the debug port to be ready
   console.log("Waiting for Jetski to be ready...");
@@ -240,31 +262,8 @@ async function run() {
       const chatLogPath = path.resolve(absoluteTargetDir, 'chat_log.txt');
       fs.writeFileSync(chatLogPath, chatText, 'utf8');
       console.log(`Saved chat log to: ${chatLogPath}`);
-
-      // Also copy all artifact directories
-      const ARTIFACT_DIRS = ['conversations', 'brain', 'knowledge'];
-      const jetskiArtifactsDir = path.join(absoluteTargetDir, 'jetski_artifacts');
-
-      if (!fs.existsSync(jetskiArtifactsDir)) {
-        fs.mkdirSync(jetskiArtifactsDir, { recursive: true });
-      }
-
-      for (const dirName of ARTIFACT_DIRS) {
-        const sourceDir = path.join(config.jetskiDir, dirName);
-        if (fs.existsSync(sourceDir)) {
-          console.log(`Copying ${dirName} from ${sourceDir} to ${jetskiArtifactsDir}...`);
-          try {
-            execSync(`cp -R "${sourceDir}" "${jetskiArtifactsDir}"`);
-            console.log(`${dirName} copied successfully.`);
-          } catch (cpError) {
-            console.error(`Failed to copy ${dirName}: ${cpError.message}`);
-          }
-        } else {
-          console.log(`No ${dirName} directory found at ${sourceDir}`);
-        }
-      }
     } catch (e) {
-      console.warn('Could not save chat log or conversations:', e.message);
+      console.warn('Could not save chat log:', e.message);
     }
 
     // Close Jetski

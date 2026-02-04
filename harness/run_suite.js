@@ -5,7 +5,7 @@ const __dirname = dirname(__filename);
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import config from './config.js';
 
 const SCENARIOS = ['greenfield', 'brownfield', 'redfield'];
@@ -19,13 +19,13 @@ let logStream = null;
 // Hook into console methods to also write to log file
 function setupLogging(logFilePath) {
   logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
-  
+
   const originalLog = console.log;
   const originalError = console.error;
   const originalWarn = console.warn;
-  
+
   console.log = function(...args) {
-    const message = args.map(arg => 
+    const message = args.map(arg =>
       typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
     ).join(' ');
     originalLog.apply(console, args);
@@ -33,9 +33,9 @@ function setupLogging(logFilePath) {
       logStream.write(`[LOG ${new Date().toISOString()}] ${message}\n`);
     }
   };
-  
+
   console.error = function(...args) {
-    const message = args.map(arg => 
+    const message = args.map(arg =>
       typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
     ).join(' ');
     originalError.apply(console, args);
@@ -43,9 +43,9 @@ function setupLogging(logFilePath) {
       logStream.write(`[ERROR ${new Date().toISOString()}] ${message}\n`);
     }
   };
-  
+
   console.warn = function(...args) {
-    const message = args.map(arg => 
+    const message = args.map(arg =>
       typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
     ).join(' ');
     originalWarn.apply(console, args);
@@ -53,7 +53,7 @@ function setupLogging(logFilePath) {
       logStream.write(`[WARN ${new Date().toISOString()}] ${message}\n`);
     }
   };
-  
+
   return { originalLog, originalError, originalWarn };
 }
 
@@ -148,6 +148,57 @@ async function main() {
   const testDir = path.join(resultsDir, testID);
   fs.mkdirSync(testDir, { recursive: true });
 
+  // Create a temporary home directory to isolate the agent profile
+  const testHomeDir = `/tmp/ghh-${Math.random().toString(36).substring(7)}`;
+  fs.mkdirSync(testHomeDir, { recursive: true });
+
+  console.log(`Setting up isolated HOME at ${testHomeDir}...`);
+
+  const appSupportSource = path.join(os.homedir(), 'Library/Application Support/Jetski');
+  const appSupportDest = path.join(testHomeDir, 'Library/Application Support/Jetski');
+  const geminiSource = path.join(os.homedir(), '.gemini/jetski');
+  const geminiDest = path.join(testHomeDir, '.gemini/jetski');
+
+  fs.mkdirSync(appSupportDest, { recursive: true });
+  fs.mkdirSync(geminiDest, { recursive: true });
+
+  // Copy minimal authentication state
+  const filesToCopy = [
+    'Cookies',
+    'Preferences',
+    'machineid',
+    'Network Persistent State'
+  ];
+
+  for (const file of filesToCopy) {
+    const src = path.join(appSupportSource, file);
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(appSupportDest, file));
+    }
+  }
+
+  // Copy Local Storage and User (excluding workspaceStorage)
+  try {
+    execSync(`rsync -a "${appSupportSource}/Local Storage/" "${appSupportDest}/Local Storage/"`);
+    execSync(`rsync -a --exclude='workspaceStorage' "${appSupportSource}/User/" "${appSupportDest}/User/"`);
+  } catch (err) {
+    console.warn('Warning: Failed to copy some Application Support directories:', err.message);
+  }
+
+  // Copy essential .gemini state
+  const geminiFiles = ['installation_id', 'user_settings.pb'];
+  for (const file of geminiFiles) {
+    const src = path.join(geminiSource, file);
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(geminiDest, file));
+    }
+  }
+
+  // Update config to use the new isolated directory
+  process.env.HOME = testHomeDir;
+  config.jetskiDir = geminiDest;
+  process.env.JETSKI_DIR = config.jetskiDir;
+
   // Setup logging to file
   const logFilePath = path.join(testDir, 'test_suite.log');
   const originalConsoleMethods = setupLogging(logFilePath);
@@ -155,34 +206,9 @@ async function main() {
   console.log(`\n=== Test Suite Starting with ID: ${testID} ===\n`);
   console.log(`Results will be saved to: ${testDir}\n`);
   console.log(`Log file: ${logFilePath}\n`);
-
-  // Artifact directories to reset
-  const ARTIFACT_DIRS = [
-    'brain',
-    'browser_recordings',
-    'code_tracker',
-    'conversations',
-    'implicit',
-    'knowledge'
-  ];
-  const jetskiDir = config.jetskiDir;
-  const backupBaseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jetski-artifacts-backup-'));
-
-  console.log(`\n=== Backing up Artifacts ===`);
-  console.log(`Source Root: ${jetskiDir}`);
-  console.log(`Backup Root: ${backupBaseDir}`);
+  console.log(`Isolated HOME: ${testHomeDir}\n`);
 
   try {
-    for (const dirName of ARTIFACT_DIRS) {
-      const sourcePath = path.join(jetskiDir, dirName);
-      const destPath = path.join(backupBaseDir, dirName);
-      if (fs.existsSync(sourcePath)) {
-        console.log(`Backing up ${dirName}...`);
-        await runCommand(`cp -R "${sourcePath}" "${destPath}"`);
-      }
-    }
-    console.log('✅ Backup successful');
-
     const endRun = 1 + NUM_RUNS;
     console.log(`\nStarting execution for ${NUM_RUNS} runs`);
 
@@ -219,15 +245,6 @@ async function main() {
           for (const agentType of AGENT_TYPES) {
             updateMcpConfig(agentType);
 
-            console.log('🧹 Clearing Artifacts for new run...');
-            for (const dirName of ARTIFACT_DIRS) {
-              const dirPath = path.join(jetskiDir, dirName);
-              // Only clear if it exists
-              if (fs.existsSync(dirPath)) {
-                await runCommand(`rm -rf "${dirPath}/"*`);
-              }
-            }
-
             const targetDir = path.join(runDir, scenario, promptType, agentType);
 
             if (!fs.existsSync(targetDir)) {
@@ -243,6 +260,7 @@ async function main() {
             console.log(`Target Dir: ${targetDir}`);
 
             try {
+              // autorun inherits the isolated HOME via process.env
               await runCommand('node', ['autorun.js', targetDir, JSON.stringify(promptContent)]);
               console.log(`✅ Completed: ${scenario}/${promptType}/${agentType} (Run ${runNumber})`);
             } catch (error) {
@@ -263,7 +281,7 @@ async function main() {
         console.warn('Could not parse existing manifest, starting fresh');
       }
     }
-    
+
     if (!manifest.tests.some(t => t.id === testID)) {
       manifest.tests.push({
         id: testID,
@@ -278,35 +296,16 @@ async function main() {
   } catch (e) {
     console.error('❌ Error during suite execution:', e);
   } finally {
-    console.log(`\n=== Restoring Artifacts ===`);
-
+    console.log(`\n=== Cleaning up isolated HOME ===`);
     try {
-      if (typeof ARTIFACT_DIRS !== 'undefined' && typeof jetskiDir !== 'undefined' && typeof backupBaseDir !== 'undefined') {
-        for (const dirName of ARTIFACT_DIRS) {
-          const sourcePath = path.join(jetskiDir, dirName);
-          const backupPath = path.join(backupBaseDir, dirName);
-
-          // Remove current state
-          if (fs.existsSync(sourcePath)) {
-            await runCommand(`rm -rf "${sourcePath}"`);
-          }
-
-          // Restore from backup if it existed
-          if (fs.existsSync(backupPath)) {
-            await runCommand(`cp -R "${backupPath}" "${sourcePath}"`);
-          }
-        }
-        console.log('✅ Restore successful');
-
-        fs.rmSync(backupBaseDir, { recursive: true, force: true });
+      if (testHomeDir && fs.existsSync(testHomeDir)) {
+        fs.rmSync(testHomeDir, { recursive: true, force: true });
+        console.log('✅ Cleanup successful');
       }
-    } catch (restoreErr) {
-      console.error('CRITICAL: Failed to restore artifacts!', restoreErr);
-      if (typeof backupBaseDir !== 'undefined') {
-        console.error(`Backup should still be available at: ${backupBaseDir}`);
-      }
+    } catch (cleanupErr) {
+      console.error('Failed to cleanup isolated HOME:', cleanupErr);
     }
-    
+
     // Restore console methods and close log stream
     restoreLogging(originalConsoleMethods);
   }
