@@ -7,6 +7,7 @@
     "report": "node evaluate.js",
     "suite": "node run_suite.js",
     "task": "node run_suite.js",
+    "typecheck": "tsc --noEmit",
     "full-run": "npm run suite && npm run report"
   },
   "dependencies": {
