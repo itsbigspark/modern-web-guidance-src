@@ -59,6 +59,17 @@ function setupIsolatedHome(): string {
     console.warn('Warning: Failed to copy some Application Support directories:', err.message);
   }
 
+  // Symlink Keychains to avoid "Keychain Not Found" dialog without requiring system permissions.
+  // This allows the agent to access the decryption key for the copied cookies.
+  const keychainsSource = path.join(os.homedir(), 'Library/Keychains');
+  const keychainsDest = path.join(tempHome, 'Library/Keychains');
+  fs.mkdirSync(path.dirname(keychainsDest), { recursive: true });
+  try {
+    fs.symlinkSync(keychainsSource, keychainsDest);
+  } catch (err: any) {
+    console.warn('Warning: Failed to symlink Keychains:', err.message);
+  }
+
   // Copy essential .gemini state
   const geminiFiles = ['installation_id', 'user_settings.pb'];
   for (const file of geminiFiles) {
@@ -203,7 +214,6 @@ async function startJetski(directory: string): Promise<void> {
   console.log(`Starting Jetski with directory: ${directory}`);
   const jetskiProcess = spawn(config.jetskiBin, [
     `--remote-debugging-port=${config.jetskiDebugPort}`,
-    '--password-store=basic',
     directory
   ], {
     detached: true, // Let it run independently
@@ -211,27 +221,6 @@ async function startJetski(directory: string): Promise<void> {
   });
 
   jetskiProcess.unref(); // Don't wait for it to exit
-
-  // Background task to dismiss the keychain dialog
-  const appleScript = `
-    tell application "System Events"
-      repeat 15 times
-        set found to false
-        -- SecurityAgent is the system process that owns this dialog
-        if exists (process "SecurityAgent") then
-          try
-            if exists (window "Keychain Not Found" of process "SecurityAgent") then
-              click button "Cancel" of window "Keychain Not Found" of process "SecurityAgent"
-              set found to true
-            end if
-          end try
-        end if
-        if found then exit repeat
-        delay 1
-      end repeat
-    end tell
-  `;
-  spawn('osascript', ['-e', appleScript], { detached: true, stdio: 'ignore' }).unref();
 
   // Wait for the debug port to be ready
   console.log("Waiting for Jetski to be ready...");
