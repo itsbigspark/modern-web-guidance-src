@@ -21,7 +21,7 @@ const absoluteTargetDir = path.resolve(targetDirectory);
  * @returns {string} The path to the temporary HOME directory.
  */
 function setupIsolatedHome(): string {
-  // Use /tmp/ deliberately because os.tmpdir() on macOS can return paths that are 
+  // Use /tmp/ deliberately because os.tmpdir() on macOS can return paths that are
   // too long for valid Unix socket paths, which causes issues for some JetSki/VS Code components.
   const tempHome = `/tmp/ghh-${Math.random().toString(36).substring(7)}`;
   fs.mkdirSync(tempHome, { recursive: true });
@@ -181,12 +181,29 @@ async function extractJetskiVersionInfo(page: Page, outputPath: string): Promise
     }
 
     // 8. Write to file
-    fs.writeFileSync(outputPath, JSON.stringify(info, null, 2), 'utf8');
+    try {
+      fs.writeFileSync(outputPath, JSON.stringify(info, null, 2), 'utf8');
+    } catch (e: any) {
+      console.warn(`Warning: Could not save Jetski info to file: ${e.message}`);
+    }
 
     // 9. Close the dialog to leave the IDE in a clean state
+    // We try Escape first, then look for an OK button as a backup
     await page.keyboard.press('Escape');
+    await sleep(500);
 
-    console.log(`Successfully saved Jetski info to ${outputPath}`);
+    // If it's still there (e.g. Escape didn't work), try clicking the OK button
+    const okButton = 'button.monaco-text-button';
+    const hasButton = await page.$(okButton);
+    if (hasButton) {
+      const text = await page.$eval(okButton, (el: any) => el.innerText);
+      if (text === 'OK') {
+        await page.click(okButton);
+        await sleep(500);
+      }
+    }
+
+    console.log(`Successfully extracted Jetski info.`);
     return info;
 
   } catch (error: any) {
@@ -271,17 +288,22 @@ async function run(): Promise<void> {
     }
 
     // Attempt to save Jetski info (only once per Test ID, effectively)
-    // targetDirectory is: results/<testID>/<runNumber>/<scenario>/<promptType>/<agentType>
-    // We want: results/<testID>/jetski_info.txt
-    // Go up 4 levels: agentType -> promptType -> scenario -> runNumber -> testID
-    const jetskiInfoPath = path.resolve(absoluteTargetDir, '../../../../jetski_info.json');
+    // If we are in the results structure (results/<testID>/<runNumber>/...), go up to the testID folder.
+    // Otherwise, just put it in the target directory.
+    let jetskiInfoPath = path.join(absoluteTargetDir, 'jetski_info.json');
+    const resultsMatch = absoluteTargetDir.match(/(.*[/\\]results[/\\]test_[^/\\]+)/);
+    if (resultsMatch) {
+      jetskiInfoPath = path.join(resultsMatch[1], 'jetski_info.json');
+    }
+
     if (!fs.existsSync(jetskiInfoPath)) {
       console.log(`Extracting Jetski info to: ${jetskiInfoPath}`);
       try {
         await extractJetskiVersionInfo(page, jetskiInfoPath);
-      } catch (e) {
-        console.error("Failed to extract Jetski info:", e);
-        // Don't crash the run for this, just continue
+      } catch (e: any) {
+        console.error("Failed to extract Jetski info:", e.message);
+        // Ensure we try to close any open dialogs that might be blocking the UI
+        await page.keyboard.press('Escape');
       }
     } else {
       console.log(`Jetski info already exists at: ${jetskiInfoPath}`);
@@ -292,7 +314,8 @@ async function run(): Promise<void> {
     const cancelButtonSelector = '[data-tooltip-id="input-send-button-cancel-tooltip"]';
     const allowOnceButtonSelector = 'button[aria-label="Allow once"]';
 
-    const iframeSelector = '#antigravity\.agentPanel, #antigravity\.cascadePanel';
+    // The double slashes are deliberate. These IDs include the dot.
+    const iframeSelector = '#antigravity\\.agentPanel, #antigravity\\.cascadePanel';
 
     console.log(`Waiting for Agent Panel iframe...`);
     let targetFrame: any = null;
