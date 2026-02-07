@@ -72,7 +72,7 @@ function setupIsolatedHome(): string {
   }
 
   // Copy essential .gemini state
-  const geminiFiles = ['installation_id', 'user_settings.pb'];
+  const geminiFiles = ['installation_id', 'user_settings.pb', 'mcp_config.json'];
   for (const file of geminiFiles) {
     const src = path.join(geminiSource, file);
     if (fs.existsSync(src)) {
@@ -222,7 +222,7 @@ async function run(): Promise<void> {
     // Setup isolated environment and MCP config
     testHomeDir = setupIsolatedHome();
     const mcpConfigPath = path.join(config.jetskiDir, 'mcp_config.json');
-    updateMcpConfig(mcpConfigPath, agentType, config.mcpApiKey);
+    updateMcpConfig(mcpConfigPath, agentType, config.mcpApiKey, 'jetski');
 
     // Use stable user data dir to persist state (welcome screen, etc.)
     const profileDir = config.jetskiProfileDir;

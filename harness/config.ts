@@ -35,7 +35,7 @@ const config: Config = {
 
   // Gemini CLI Configuration
   geminiCliBin: process.env.GEMINI_CLI_BIN || 'gemini',
-  geminiDir: process.env.GEMINI_DIR || path.join(__dirname, '../.gemini'),
+  geminiDir: process.env.GEMINI_DIR || path.join(os.homedir(), '.gemini'),
 
   // MCP Server Configuration
   mcpServerPath: path.join(__dirname, '../serving/mcp-server/index.ts'),

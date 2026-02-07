@@ -71,11 +71,11 @@ export function createTrustedFolders(contentsDir: string, folders: string[]): vo
 
 /**
  * Updates the MCP configuration file to enable or disable the Google Developer Knowledge MCP server.
- * @param configFullPath Full path to the MCP configuration file (e.g. mcp_config.json or settings.json)
+ * @param configFullPath Full path to the MCP configuration file
  * @param runType 'guided' or 'unguided'
  * @param apiKey The API key for the MCP server
  */
-export function updateMcpConfig(configFullPath: string, runType: string, apiKey: string): void {
+export function updateMcpConfig(configFullPath: string, runType: string, apiKey: string, agent: string): void {
   let mcpConfig: { mcpServers?: Record<string, any> } = { mcpServers: {} };
 
   try {
@@ -94,12 +94,21 @@ export function updateMcpConfig(configFullPath: string, runType: string, apiKey:
   const serverName = 'google-developer-knowledge-mcp';
   // Note: 'guided' enables the server, anything else (like 'unguided') disables it.
   if (runType === 'guided') {
-    mcpConfig.mcpServers[serverName] = {
-      "url": "https://developerknowledge.googleapis.com/mcp",
-      "headers": {
-        "X-Goog-Api-Key": apiKey
-      }
-    };
+    if (agent === 'gemini_cli') {
+      mcpConfig.mcpServers[serverName] = {
+        "url": "https://developerknowledge.googleapis.com/mcp",
+        "headers": {
+          "X-Goog-Api-Key": apiKey
+        }
+      };
+    } else if (agent === 'jetski') {
+      mcpConfig.mcpServers[serverName] = {
+        "serverUrl": "https://developerknowledge.googleapis.com/mcp",
+        "headers": {
+          "X-Goog-Api-Key": apiKey
+        }
+      };
+    }
     console.log(`Enabled ${serverName} MCP server in ${configFullPath}`);
   } else {
     if (mcpConfig.mcpServers[serverName]) {

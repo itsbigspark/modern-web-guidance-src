@@ -72,7 +72,7 @@ async function run() {
       fs.mkdirSync(absoluteTargetDir, { recursive: true });
     }
 
-    updateMcpConfig(path.join(config.geminiDir, 'settings.json'), runType, config.mcpApiKey);
+    updateMcpConfig(path.join(config.geminiDir, 'settings.json'), runType, config.mcpApiKey, 'gemini_cli');
 
     const command = config.geminiCliBin;
     const commandArgs = [
