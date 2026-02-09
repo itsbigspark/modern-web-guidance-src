@@ -3,7 +3,7 @@ import path from 'path';
 
 /**
  * Creates a unique isolated HOME directory in /tmp.
- * @param prefix The prefix for the directory name (e.g. 'ghh' or 'ghh-gemini').
+ * @param prefix The prefix for the directory name
  * @returns The path to the created directory.
  */
 export function createIsolatedHome(prefix: string): string {
@@ -111,15 +111,34 @@ export function updateMcpConfig(configFullPath: string, runType: string, apiKey:
     }
     console.log(`Enabled ${serverName} MCP server in ${configFullPath}`);
   } else {
-    if (mcpConfig.mcpServers[serverName]) {
-      delete mcpConfig.mcpServers[serverName];
-      console.log(`Disabled ${serverName} MCP server in ${configFullPath}`);
-    }
+    // For unguided runs (or any other type), clear all MCP servers to ensure a clean slate.
+    mcpConfig.mcpServers = {};
+    console.log(`Cleared all MCP servers in ${configFullPath} (runType: ${runType})`);
   }
 
   try {
     fs.writeFileSync(configFullPath, JSON.stringify(mcpConfig, null, 2));
   } catch (e) {
     console.error(`Failed to write MCP config to ${configFullPath}:`, e);
+  }
+}
+
+export function copyGeminiContext(projectRoot: string, targetDir: string): void {
+  const geminiMdSource = path.join(projectRoot, 'harness', 'GEMINI.md');
+  const agentDir = path.join(targetDir, '.agent');
+  const geminiMdDest = path.join(agentDir, 'GEMINI.md');
+
+  if (fs.existsSync(geminiMdSource)) {
+    try {
+      if (!fs.existsSync(agentDir)) {
+        fs.mkdirSync(agentDir, { recursive: true });
+      }
+      fs.copyFileSync(geminiMdSource, geminiMdDest);
+      console.log(`Copied GEMINI.md to ${geminiMdDest}`);
+    } catch (e: any) {
+      console.warn(`Warning: Failed to copy GEMINI.md: ${e.message}`);
+    }
+  } else {
+    console.warn(`Warning: GEMINI.md not found at ${geminiMdSource}`);
   }
 }
