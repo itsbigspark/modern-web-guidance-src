@@ -50,7 +50,7 @@ export function copyFileIfExists(src: string, dest: string): void {
 
 /**
  * Creates a trustedFolders.json file to avoid "untrusted folder" errors.
- * @param contentsDir Directory to write the trustedFolders.json file to (e.g. .gemini or within .gemini/jetski)
+ * @param contentsDir Directory to write the trustedFolders.json file to (e.g. .gemini or .gemini/jetski)
  * @param folders List of absolute paths to trust
  */
 export function createTrustedFolders(contentsDir: string, folders: string[]): void {
@@ -99,21 +99,35 @@ export function updateMcpConfig(
         command: 'node',
         args: [modernWebServerPath]
       };
-    } else if (serverName === 'google-developer-knowledge-mcp') {
+    } else if (serverName === 'google-developer-knowledge') {
       if (!apiKey) {
-        throw new Error('MCP_API_KEY is required for google-developer-knowledge-mcp but was not provided.');
+        throw new Error('MCP_API_KEY is required for google-developer-knowledge but was not provided.');
       }
       const url = 'https://developerknowledge.googleapis.com/mcp';
 
-      // Jetski requires 'serverUrl' for the urlKey header
-      const urlKey = agent === 'jetski' ? 'serverUrl' : 'url';
-
-      mcpConfig.mcpServers['google-developer-knowledge-mcp'] = {
-        [urlKey]: url,
-        headers: {
-          'X-Goog-Api-Key': apiKey
-        }
-      };
+      if (agent === 'jetski') {
+        mcpConfig.mcpServers['google-developer-knowledge'] = {
+          serverUrl: url,
+          headers: {
+            'X-Goog-Api-Key': apiKey
+          }
+        };
+      } else if (agent === 'claude-code') {
+        mcpConfig.mcpServers['google-developer-knowledge'] = {
+          type: 'http',
+          url: url,
+          headers: {
+            'X-Goog-Api-Key': apiKey
+          }
+        };
+      } else { // Gemini CLI
+        mcpConfig.mcpServers['google-developer-knowledge'] = {
+          httpUrl: url,
+          headers: {
+            'X-Goog-Api-Key': apiKey
+          }
+        };
+      }
     } else {
       console.warn(`Warning: Unknown MCP server name '${serverName}' in config. Skipping.`);
     }
@@ -130,25 +144,36 @@ export function updateMcpConfig(
   }
 }
 
-export function copyGeminiContext(projectRoot: string, homeDir: string): boolean {
-  const geminiMdSource = path.join(projectRoot, 'harness', 'GEMINI.md');
-  const geminiDir = path.join(homeDir, '.gemini');
-  const geminiMdDest = path.join(geminiDir, 'GEMINI.md');
+export function copyAgentContext(projectRoot: string, homeDir: string, isClaude: boolean = false): boolean {
+  const instructionsSource = path.join(projectRoot, 'harness', 'INSTRUCTIONS.md');
 
-  if (!fs.existsSync(geminiMdSource)) {
-    console.warn(`Warning: GEMINI.md not found at ${geminiMdSource}`);
+  if (!fs.existsSync(instructionsSource)) {
+    console.warn(`Warning: INSTRUCTIONS.md not found at ${instructionsSource}`);
     return false;
   }
 
+  let destDir = '';
+  let destFile = '';
+
+  if (isClaude) {
+    destDir = path.join(homeDir, '.claude');
+    destFile = 'CLAUDE.md';
+  } else {
+    destDir = path.join(homeDir, '.gemini');
+    destFile = 'GEMINI.md';
+  }
+
+  const fullDestPath = path.join(destDir, destFile);
+
   try {
-    if (!fs.existsSync(geminiDir)) {
-      fs.mkdirSync(geminiDir, { recursive: true });
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
     }
-    fs.copyFileSync(geminiMdSource, geminiMdDest);
-    console.log(`Copied GEMINI.md to ${geminiMdDest}`);
+    fs.copyFileSync(instructionsSource, fullDestPath);
+    console.log(`Copied INSTRUCTIONS.md to ${fullDestPath}`);
     return true;
   } catch (e: any) {
-    console.warn(`Warning: Failed to copy GEMINI.md: ${e.message}`);
+    console.warn(`Warning: Failed to copy INSTRUCTIONS.md: ${e.message}`);
     return false;
   }
 }

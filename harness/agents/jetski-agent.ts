@@ -6,7 +6,7 @@ import type { Page } from 'puppeteer-core';
 import { spawn, execSync } from 'child_process';
 import { config } from '../config.ts';
 
-import { createIsolatedHome, cleanupIsolatedHome, updateMcpConfig, createTrustedFolders, copyGeminiContext, sleep, killProcessOnPort, parseAgentArgs } from '../lib/agent-shared.ts';
+import { createIsolatedHome, cleanupIsolatedHome, updateMcpConfig, createTrustedFolders, copyAgentContext, sleep, killProcessOnPort, parseAgentArgs } from '../lib/agent-shared.ts';
 
 // Parse arguments
 const { userPrompt, runType, absoluteTargetDir, projectRoot } = parseAgentArgs('jetski-agent.ts');
@@ -20,13 +20,13 @@ function setupIsolatedHome(): string {
 
   const appSupportSource = path.join(os.homedir(), 'Library/Application Support/Jetski');
   const appSupportDest = path.join(tempHome, 'Library/Application Support/Jetski');
-  const geminiSource = path.join(os.homedir(), '.gemini/jetski');
-  const geminiDest = path.join(tempHome, '.gemini/jetski');
+  const jetskiSource = path.join(os.homedir(), '.gemini/jetski');
+  const jetskiDest = path.join(tempHome, '.gemini/jetski');
 
   fs.mkdirSync(appSupportDest, { recursive: true });
-  fs.mkdirSync(geminiDest, { recursive: true });
+  fs.mkdirSync(jetskiDest, { recursive: true });
 
-  createTrustedFolders(path.dirname(geminiDest), [absoluteTargetDir]);
+  createTrustedFolders(path.dirname(jetskiDest), [absoluteTargetDir]);
 
   // Copy minimal authentication state
   const filesToCopy = [
@@ -65,22 +65,22 @@ function setupIsolatedHome(): string {
   // Copy essential .gemini state
   const geminiFiles = ['installation_id', 'user_settings.pb'];
   for (const file of geminiFiles) {
-    const src = path.join(geminiSource, file);
+    const src = path.join(jetskiSource, file);
     if (fs.existsSync(src)) {
-      fs.copyFileSync(src, path.join(geminiDest, file));
+      fs.copyFileSync(src, path.join(jetskiDest, file));
     }
   }
 
   // Set environment variables for the child process and the current process
   process.env.HOME = tempHome;
-  process.env.JETSKI_DIR = geminiDest;
+  process.env.JETSKI_DIR = jetskiDest;
 
   // Add GEMINI context and MCP servers for guided runs
   if (runType === 'guided') {
-    copyGeminiContext(projectRoot, tempHome);
+    copyAgentContext(projectRoot, tempHome);
 
     updateMcpConfig(
-      path.join(geminiDest, 'mcp_config.json'),
+      path.join(jetskiDest, 'mcp_config.json'),
       config.mcpServersToEnable,
       config.modernWebServerPath,
       config.mcpApiKey,
