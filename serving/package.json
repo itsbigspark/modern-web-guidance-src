@@ -9,6 +9,7 @@
     "./lib": "./mcp-server/lib.ts"
   },
   "files": [
+    "mcp-server",
     "build",
     ".mcp-data",
     "AGENTS.md",
