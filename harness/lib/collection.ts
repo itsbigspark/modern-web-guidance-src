@@ -24,7 +24,7 @@ export async function collectResults(resultsDir: string) {
   for (const runDir of runDirs) {
     const runPath = path.join(resultsDir, runDir);
 
-    // Structure: results/{testID}/{runNumber}/{scenario}/{type}/{agent}
+    // Structure: results/{testID}/{runNumber}/{scenario}/{promptType}/{runType}
     const directories = glob.sync('*/*/*/', {
       cwd: runPath,
       absolute: true
@@ -36,8 +36,8 @@ export async function collectResults(resultsDir: string) {
 
       if (parts.length < 3) continue;
 
-      const [scenario, promptType, agentType] = parts;
-      const testName = `${scenario} - ${promptType} - ${agentType}`;
+      const [scenario, promptType, runType] = parts;
+      const testName = `${scenario} - ${promptType} - ${runType}`;
 
       const files = glob.sync('**/*', { cwd: dir, nodir: true });
 
@@ -55,7 +55,7 @@ export async function collectResults(resultsDir: string) {
       }
 
       let guideResults = undefined;
-      if (agentType === 'guided') {
+      if (runType === 'guided') {
         guideResults = await checkGuides(dir, scenario);
       }
 
