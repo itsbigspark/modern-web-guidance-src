@@ -8,7 +8,6 @@ import { spawn } from 'child_process';
 import { config, Agents } from './config.ts';
 
 const RUN_TYPES = ['guided', 'unguided'];
-
 // Global log file stream
 let logStream: fs.WriteStream | null = null;
 
@@ -16,6 +15,7 @@ async function main() {
   const baseDir = __dirname;
   const baseAppsDir = path.join(baseDir, 'base_apps');
   const resultsDir = path.join(baseDir, 'results');
+  const useCasesDir = path.join(baseDir, '../use-cases');
 
   // Create results directory if it doesn't exist
   if (!fs.existsSync(resultsDir)) {
@@ -73,14 +73,13 @@ async function main() {
 
     try {
       // Dispatch based on agent
-      if (agent === Agents.GEMINI_CLI) {
-        // Use experimental-strip-types for running TS directly
-        await runCommand('node', ['--experimental-strip-types', 'agents/gemini-cli-agent.ts', JSON.stringify(argPrompt), 'guided', path.resolve(argDir)]);
-      } else if (agent === Agents.CLAUDE_CODE) {
-        await runCommand('node', ['--experimental-strip-types', 'agents/claude-code-agent.ts', JSON.stringify(argPrompt), 'guided', path.resolve(argDir)]);
-      } else {
-        await runCommand('node', ['--experimental-strip-types', 'agents/jetski-agent.ts', JSON.stringify(argPrompt), 'guided', path.resolve(argDir)]);
-      }
+      const agentScript = path.join(__dirname, 'agents',
+        agent === Agents.GEMINI_CLI ? 'gemini-cli-agent.ts' :
+          agent === Agents.CLAUDE_CODE ? 'claude-code-agent.ts' :
+            'jetski-agent.ts'
+      );
+
+      await runCommand('node', ['--experimental-strip-types', agentScript, JSON.stringify(argPrompt), 'guided', path.resolve(argDir)]);
       console.log(`\n✅ Single task complete!`);
     } catch (error) {
       console.error(`❌ Single task failed:`, error);
@@ -117,40 +116,55 @@ async function main() {
         fs.mkdirSync(runDir, { recursive: true });
       }
 
-      for (const scenario of config.scenarios) {
-        for (const promptType of config.promptTypes) {
-          const promptPath = path.join(baseAppsDir, scenario, promptType, 'PROMPT.txt');
-          if (!fs.existsSync(promptPath)) continue;
+      // Check for misconfigured use cases first
+      const missingUseCases = config.useCases.filter(uc => !fs.existsSync(path.join(useCasesDir, uc)));
+      if (missingUseCases.length > 0) {
+        console.warn(`\n⚠️  Warning: The following use cases were not found in ${useCasesDir}:`);
+        missingUseCases.forEach(uc => console.warn(`   - ${uc}`));
+        console.warn(`They will be skipped.\n`);
+      }
 
-          let promptContent = fs.readFileSync(promptPath, 'utf8').trim();
-          promptContent += ` Don't bother doing any manual verification in a browser. If images are needed, prefer using some stock photos from the web rather than generating them with Nano Banana.`;
+      for (const baseApp of config.baseApps) {
+        // Read prompt from base app
+        const promptPath = path.join(baseAppsDir, baseApp, 'PROMPT.txt');
+        if (!fs.existsSync(promptPath)) {
+          console.warn(`Skipping base app ${baseApp}: PROMPT.txt not found at ${promptPath}`);
+          continue;
+        }
 
-          for (const runType of RUN_TYPES) {
-            const templateDir = path.join(baseAppsDir, scenario, promptType, runType);
-            const targetDir = path.join(runDir, scenario, promptType, runType);
+        let promptContent = fs.readFileSync(promptPath, 'utf8').trim();
+        // Append instruction to use stock photos if needed
+        promptContent += ` Don't bother doing any manual verification in a browser. If images are needed, prefer using some stock photos from the web rather than generating them with Nano Banana.`;
 
-            if (!fs.existsSync(templateDir)) {
-              throw new Error(`Template directory not found: ${templateDir}`);
-            }
+        for (const runType of RUN_TYPES) {
+          const templateDir = path.join(baseAppsDir, baseApp, runType);
+          if (!fs.existsSync(templateDir)) {
+            throw new Error(`Template directory not found: ${templateDir}`);
+          }
 
-            if (!fs.existsSync(targetDir)) {
-              fs.mkdirSync(targetDir, { recursive: true });
-            }
+          const targetDir = path.join(runDir, baseApp, runType);
+          if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+          }
 
-            console.log(`\n>>> Running Scenario: ${scenario} | Prompt: ${promptType} | Run Type: ${runType} | Run: ${runNumber} | Agent: ${agent}`);
-            try {
-              // Dispatch to appropriate agent script based on agent
-              if (agent === Agents.GEMINI_CLI) {
-                await runCommand('node', ['--experimental-strip-types', 'agents/gemini-cli-agent.ts', JSON.stringify(promptContent), runType, targetDir, templateDir]);
-              } else if (agent === Agents.CLAUDE_CODE) {
-                await runCommand('node', ['--experimental-strip-types', 'agents/claude-code-agent.ts', JSON.stringify(promptContent), runType, targetDir, templateDir]);
-              } else {
-                await runCommand('node', ['--experimental-strip-types', 'agents/jetski-agent.ts', JSON.stringify(promptContent), runType, targetDir, templateDir]);
-              }
-              console.log(`✅ Completed: ${scenario}/${promptType}/${runType} (Run ${runNumber})`);
-            } catch (error) {
-              console.error(`❌ Failed: ${scenario}/${promptType}/${runType} (Run ${runNumber})`, error);
-            }
+          console.log(`\n>>> Running App: ${baseApp} | Run Type: ${runType} | Run: ${runNumber} | Agent: ${agent}`);
+          try {
+          // Dispatch to appropriate agent script based on agent
+            const agentArgs = [
+              '--experimental-strip-types',
+              path.join(__dirname, 'agents', agent === Agents.GEMINI_CLI ? 'gemini-cli-agent.ts' :
+                agent === Agents.CLAUDE_CODE ? 'claude-code-agent.ts' :
+                  'jetski-agent.ts'),
+              JSON.stringify(promptContent),
+              runType,
+              targetDir,
+              templateDir
+            ];
+
+            await runCommand('node', agentArgs);
+            console.log(`✅ Completed: ${baseApp}/${runType} (Run ${runNumber})`);
+          } catch (error) {
+            console.error(`❌ Failed: ${baseApp}/${runType} (Run ${runNumber})`, error);
           }
         }
       }

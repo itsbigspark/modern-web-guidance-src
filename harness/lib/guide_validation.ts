@@ -13,12 +13,12 @@ export interface GuideValidationResult {
 }
 
 const EXPECTED_GUIDES: Record<string, string[]> = {
-  greenfield: ['adaptive-loading', 'tooltip', 'scroll-driven-animations'],
-  brownfield: ['preload-prerender'],
-  redfield: ['tooltip']
+  'specific': ['preload-prerender'],
+  'vague': ['preload-prerender']
 };
 
-export async function checkGuides(dirPath: string, scenario: string): Promise<GuideValidationResult> {
+
+export async function checkGuides(dirPath: string, appName: string): Promise<GuideValidationResult> {
   const resourcesPath = path.join(dirPath, 'resources_used.json');
   
   if (!fs.existsSync(resourcesPath)) {
@@ -52,7 +52,7 @@ export async function checkGuides(dirPath: string, scenario: string): Promise<Gu
     message: 'resources_used.json found'
   }];
 
-  const expected = EXPECTED_GUIDES[scenario] || [];
+  const expected = EXPECTED_GUIDES[appName] || [];
   
   // Extract all resource names for easier searching
   const resourceNames = resources.map(r => r.name || '').filter(Boolean);

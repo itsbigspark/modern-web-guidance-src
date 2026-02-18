@@ -5,11 +5,17 @@ import { collectResults } from './lib/collection.ts';
 import { calculateMetrics } from './lib/metrics.ts';
 import { generateMarkdownReport, generateJsonReport, saveReports } from './lib/reporting.ts';
 
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 async function main() {
-  console.log('Starting Static Evaluation...'.cyan.bold);
+  console.log('Starting Evaluation...'.cyan.bold);
 
   // Read manifest to find the latest test
-  const manifestPath = 'results/tests.json';
+  const resultsDirBase = path.join(__dirname, 'results');
+  const manifestPath = path.join(resultsDirBase, 'tests.json');
   if (!fs.existsSync(manifestPath)) {
     console.error('Manifest file not found at results/tests.json!'.red);
     return;
@@ -56,7 +62,7 @@ async function main() {
     const latestTest = manifest.tests[manifest.tests.length - 1];
     testID = latestTest.id;
   }
-  const resultsDir = path.join('results', testID);
+  const resultsDir = path.join(resultsDirBase, testID);
 
   console.log(`Evaluating test: ${testID}`.cyan);
   console.log(`Results directory: ${resultsDir}`.cyan);

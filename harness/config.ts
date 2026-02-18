@@ -7,9 +7,7 @@ import "dotenv/config";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- * Configuration module that loads settings from environment variables
- * with sensible defaults. This allows the project to work on different
- * machines without requiring hardcoded paths.
+ * Configuration module
  */
 
 interface Config {
@@ -26,8 +24,8 @@ interface Config {
   mcpApiKey: string;
   enableSkills: boolean;
   numRuns: number;
-  scenarios: string[];
-  promptTypes: string[];
+  useCases: string[];
+  baseApps: string[];
 }
 
 const config: Config = {
@@ -50,9 +48,9 @@ const config: Config = {
   mcpApiKey: process.env.MCP_API_KEY || '', // For google-developer-knowledge MCP server
 
   // Suite Configuration
-  numRuns: 3,
-  scenarios: ['brownfield', 'greenfield', 'redfield'],
-  promptTypes: ['specific', 'vague'],
+  numRuns: 1,
+  useCases: ['content-vis'],
+  baseApps: ['specific', 'vague'],
   mcpServersToEnable: [], // Available servers: 'modern-web', 'google-developer-knowledge'
   enableSkills: true,
 };
