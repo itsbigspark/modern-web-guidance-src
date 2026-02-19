@@ -188,7 +188,7 @@ function calculateGroupTotalStats(results, runType) {
     let total = 0;
 
     Object.keys(results).forEach(key => {
-        // key format: "appName - useCase - runType"
+        // key format: "appName - guide - runType"
         if (key.endsWith(` - ${runType}`)) {
             results[key].forEach(run => {
                 const s = getRunStats(run.results);
@@ -210,11 +210,11 @@ function renderGrid(data, testID) {
     const keys = Object.keys(results);
     const partsMap = keys.map(k => k.split(' - '));
 
-    // Assume 3 parts: [appName, useCase, [guided/unguided]]
+    // Assume 3 parts: [appName, guide, runType]
     const validParts = partsMap.filter(p => p.length === 3);
 
     const sortedAppNames = [...new Set(validParts.map(p => p[0]))].sort();
-    const sortedUseCases = [...new Set(validParts.map(p => p[1]))].sort();
+    const sortedGuides = [...new Set(validParts.map(p => p[1]))].sort();
 
     // Sort runTypes: unguided first, then guided, then alphabetical
     const sortedRunTypes = [...new Set(validParts.map(p => p[2]))].sort((a, b) => {
@@ -224,9 +224,9 @@ function renderGrid(data, testID) {
     });
 
     sortedAppNames.forEach(appName => {
-        sortedUseCases.forEach(useCase => {
+        sortedGuides.forEach(guide => {
             sortedRunTypes.forEach(runType => {
-                const testName = `${appName} - ${useCase} - ${runType}`;
+                const testName = `${appName} - ${guide} - ${runType}`;
                 const runData = results[testName];
                 const testStats = stats[testName];
 
@@ -269,7 +269,7 @@ async function showDetails(testName, runs, stats, testID) {
     const title = document.getElementById('modal-title');
     const contentDiv = document.querySelector('.modal-content');
     const body = document.getElementById('modal-body');
-    const [appName, useCase, runType] = testName.split(' - ');
+    const [appName, guide, runType] = testName.split(' - ');
 
     // Reset modifier classes
     contentDiv.classList.remove('diff-modal');
@@ -301,7 +301,7 @@ async function showDetails(testName, runs, stats, testID) {
         // Cover cases for new use case format and old (greenfield, brownfield, redfield) format
         const basePaths = [
             `results/${testID}/${run.runNumber}/${appName}/${runType}`,
-            `results/${testID}/${run.runNumber}/${appName}/${useCase}/${runType}`
+            `results/${testID}/${run.runNumber}/${appName}/${guide}/${runType}`
         ];
 
         const resultPath = await findBestEntryPoint(basePaths);
@@ -397,7 +397,7 @@ async function showDetails(testName, runs, stats, testID) {
         if (viewResourcesLink) {
             viewResourcesLink.onclick = (e) => {
                 e.preventDefault();
-                // usedBasePath is like "results/testID/runNumber/appName/useCase/runType"
+                // usedBasePath is like "results/testID/runNumber/appName/guide/runType"
                 // resources_used.json is usually in that same directory
                 const resourcesPath = `${usedBasePath}/resources_used.json`;
                 viewContent(resourcesPath, resourcesPath);
@@ -410,7 +410,7 @@ async function showDetails(testName, runs, stats, testID) {
         diffButton.style.cssText = 'margin-left: 10px; font-size: 0.8em; padding: 2px 8px;';
         diffButton.onclick = () => viewDiff(setupPath, resultPath);
 
-        const rawResultsPath = `${usedBasePath}/${useCase}_results.json`;
+        const rawResultsPath = `${usedBasePath}/${guide}_results.json`;
         let showRawResults = false;
         try {
             const rawRes = await fetch(rawResultsPath, { method: 'HEAD' });

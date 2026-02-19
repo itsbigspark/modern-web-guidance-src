@@ -62,17 +62,17 @@ export async function collectResults(resultsDir: string) {
       const targetFile = path.join(dir, 'index.html');
 
       // Run the tests for each use case
-      for (const useCase of config.useCases) {
-        const testName = `${baseApp} - ${useCase} - ${runType}`;
+      for (const guide of config.eval.guidesToTest) {
+        const testName = `${baseApp} - ${guide} - ${runType}`;
 
         const useCasesDir = path.resolve(__dirname, '../../use-cases');
-        const graderPath = path.join(useCasesDir, useCase, `${useCase}.grader.js`);
+        const graderPath = path.join(useCasesDir, guide, `${guide}.grader.js`);
 
         let scenarioResults: any[] = [];
-        const graderResults = path.join(dir, `${useCase}_results.json`);
+        const graderResults = path.join(dir, `${guide}_results.json`);
 
         if (!fs.existsSync(graderPath)) {
-          console.warn(`Grader not found for ${useCase} at ${graderPath}`);
+          console.warn(`Grader not found for ${guide} at ${graderPath}`);
           scenarioResults.push({ name: 'Configuration', status: 'fail', message: 'Grader not found' });
         } else if (!fs.existsSync(targetFile)) {
           scenarioResults.push({ name: 'File Check', status: 'fail', message: 'index.html not found' });
@@ -90,7 +90,7 @@ export async function collectResults(resultsDir: string) {
             if (useExistingResults) {
               json = JSON.parse(fs.readFileSync(graderResults, 'utf-8'));
             } else {
-              console.log(`Running grader for ${useCase} in ${dir}...`);
+              console.log(`Running grader for ${guide} in ${dir}...`);
               // Use spawnSync to handle exit codes without throwing
               const { spawnSync } = await import('child_process');
               const result = spawnSync('pnpm', ['--silent', '--filter', 'use-cases', 'exec', 'playwright', 'test', graderPath, '--reporter=json'], {

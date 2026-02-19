@@ -1,6 +1,5 @@
 ---
 description: Improve initial page load and interaction responsiveness by deferring the rendering work of off-screen components until they are needed.
-filename: optimize-rendering-of-long-pages.md
 ---
 
 # Optimize Rendering of Long Pages

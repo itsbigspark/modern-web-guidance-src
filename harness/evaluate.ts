@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+import { config } from './config.ts';
+
 async function main() {
   console.log('Starting Evaluation...'.cyan.bold);
 
@@ -34,29 +36,9 @@ async function main() {
     return;
   }
 
-  // ===========================================================================
-  // CLI Arguments Configuration
-  // ===========================================================================
-  // Available flags:
-  // --test_dir=<test_id>  : Specify a specific test ID to evaluate (e.g., 'test_gemini_cli').
-  //                         If not provided, defaults to the most recent test in results/tests.json.
-  //
-  // Examples:
-  //   pnpm report --test_dir=test_gemini_cli
-  // ===========================================================================
-
-  const args = process.argv.slice(2);
-  let specificTestId = null;
-  for (const arg of args) {
-    if (arg.startsWith('--test_dir=')) {
-      specificTestId = arg.split('=')[1];
-      break;
-    }
-  }
-
   let testID;
-  if (specificTestId) {
-    testID = specificTestId;
+  if (config.eval.suiteName) {
+    testID = config.eval.suiteName;
   } else {
     // Get the latest test if no specific test ID is provided
     const latestTest = manifest.tests[manifest.tests.length - 1];

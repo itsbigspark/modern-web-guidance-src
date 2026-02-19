@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { config } from '../config.ts';
 
 export interface GuideCheck {
   id: string;
@@ -11,12 +12,6 @@ export interface GuideValidationResult {
   checks: GuideCheck[];
   resourcesUsed: any[] | null;
 }
-
-const EXPECTED_GUIDES: Record<string, string[]> = {
-  'specific': ['preload-prerender'],
-  'vague': ['preload-prerender']
-};
-
 
 export async function checkGuides(dirPath: string, appName: string): Promise<GuideValidationResult> {
   const resourcesPath = path.join(dirPath, 'resources_used.json');
@@ -52,7 +47,7 @@ export async function checkGuides(dirPath: string, appName: string): Promise<Gui
     message: 'resources_used.json found'
   }];
 
-  const expected = EXPECTED_GUIDES[appName] || [];
+  const expected = config.eval.expectedGuides[appName] || [];
   
   // Extract all resource names for easier searching
   const resourceNames = resources.map(r => r.name || '').filter(Boolean);

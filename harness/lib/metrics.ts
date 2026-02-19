@@ -34,14 +34,14 @@ export function calculateMetrics(allResults: Record<string, RunResult[]>, numRun
   const runTypeOrder: Record<string, number> = { 'unguided': 1, 'guided': 2 };
 
   const sortedKeys = Object.keys(allResults).sort((a, b) => {
-    const [baseAppA, useCaseA, runTypeA] = a.split(' - ');
-    const [baseAppB, useCaseB, runTypeB] = b.split(' - ');
+    const [baseAppA, guideA, runTypeA] = a.split(' - ');
+    const [baseAppB, guideB, runTypeB] = b.split(' - ');
 
     if (baseAppA !== baseAppB) {
       return baseAppA.localeCompare(baseAppB);
     }
-    if (useCaseA !== useCaseB) {
-      return useCaseA.localeCompare(useCaseB);
+    if (guideA !== guideB) {
+      return guideA.localeCompare(guideB);
     }
 
     // Sort known run types first, others alphabetically

@@ -15,49 +15,17 @@ async function main() {
   const baseDir = __dirname;
   const baseAppsDir = path.join(baseDir, 'base_apps');
   const resultsDir = path.join(baseDir, 'results');
-  const useCasesDir = path.join(baseDir, '../use-cases');
 
   // Create results directory if it doesn't exist
   if (!fs.existsSync(resultsDir)) {
     fs.mkdirSync(resultsDir, { recursive: true });
   }
 
-  // ===========================================================================
-  // CLI Arguments Configuration
-  // ===========================================================================
-  // Available flags:
-  //   --agent=<type>    : Agent name (default: jetski)
-  //   --name=<string>    : Custom name for the test run (defaults to timestamp)
-  //
-  // Examples:
-  //   pnpm suite --agent=gemini_cli --name=benchmark-v1
-  //   pnpm task /path/to/dir "prompt" --agent=gemini_cli
-  // ===========================================================================
-
-  const VALID_AGENTS: string[] = Object.values(Agents);
-
-  const args = process.argv.slice(2);
-  let agent = process.env.AGENT || Agents.JETSKI;
-  let customTestName = null;
-  let numRuns = config.numRuns;
-  const positionalArgs = [];
-
-  for (const arg of args) {
-    if (arg.startsWith('--agent=')) {
-      agent = arg.split('=')[1];
-    } else if (arg.startsWith('--name=')) {
-      customTestName = arg.split('=')[1];
-    } else {
-      positionalArgs.push(arg);
-    }
-  }
-
-  if (!VALID_AGENTS.includes(agent)) {
-    console.error(`\n❌ Error: Unknown agent '${agent}'. Supported agents: ${VALID_AGENTS.join(', ')}`);
-    process.exit(1);
-  }
+  const agent = config.suite.agent;
 
   // Single task mode check
+  const args = process.argv.slice(2);
+  const positionalArgs = args.filter(arg => !arg.startsWith('--'));
   const [argDir, argPrompt] = positionalArgs;
 
   if (argDir && argPrompt) {
@@ -89,7 +57,7 @@ async function main() {
 
   // Generate a unique testID with timestamp or use custom name
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-  const testID = customTestName || `test_${timestamp}`;
+  const testID = config.suite.name || `test_${timestamp}`;
   const testDir = path.join(resultsDir, testID);
   fs.mkdirSync(testDir, { recursive: true });
 
@@ -102,8 +70,8 @@ async function main() {
   console.log(`Log file: ${logFilePath}\n`);
 
   try {
-    const endRun = 1 + numRuns;
-    console.log(`\nStarting execution for ${numRuns} runs`);
+    const endRun = 1 + config.suite.numRuns;
+    console.log(`\nStarting execution for ${config.suite.numRuns} runs`);
 
     for (let runNumber = 1; runNumber < endRun; runNumber++) {
 
@@ -116,15 +84,7 @@ async function main() {
         fs.mkdirSync(runDir, { recursive: true });
       }
 
-      // Check for misconfigured use cases first
-      const missingUseCases = config.useCases.filter(uc => !fs.existsSync(path.join(useCasesDir, uc)));
-      if (missingUseCases.length > 0) {
-        console.warn(`\n⚠️  Warning: The following use cases were not found in ${useCasesDir}:`);
-        missingUseCases.forEach(uc => console.warn(`   - ${uc}`));
-        console.warn(`They will be skipped.\n`);
-      }
-
-      for (const baseApp of config.baseApps) {
+      for (const baseApp of config.suite.baseApps) {
         // Read prompt from base app
         const promptPath = path.join(baseAppsDir, baseApp, 'PROMPT.txt');
         if (!fs.existsSync(promptPath)) {
@@ -138,6 +98,7 @@ async function main() {
 
         for (const runType of RUN_TYPES) {
           const templateDir = path.join(baseAppsDir, baseApp, runType);
+
           if (!fs.existsSync(templateDir)) {
             throw new Error(`Template directory not found: ${templateDir}`);
           }
@@ -179,7 +140,7 @@ async function main() {
     }
 
     if (!manifest.tests.some(t => t.id === testID)) {
-      manifest.tests.push({ id: testID, timestamp: new Date().toISOString(), runCount: numRuns });
+      manifest.tests.push({ id: testID, timestamp: new Date().toISOString(), runCount: config.suite.numRuns });
       fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
     }
 
