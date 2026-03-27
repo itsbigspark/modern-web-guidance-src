@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { rootDir } from '../lib/root.ts';
+import { rootDir, baseAppsDir, tasksDir } from '../lib/paths.ts';
 
 import { generateNegative } from './negative-gen.ts';
 import { generateGrader, generateGraderWithContext } from './grader-gen.ts';
@@ -32,8 +32,6 @@ import {
   classifyGuide,
   scanAllGuides
 } from '../harness/lib/utils.ts';
-
-const TASKS_DIR = path.join(rootDir, 'harness', 'tasks');
 
 export interface DevGuideOptions {
   maxRetries?: number;   // default: 2
@@ -227,7 +225,7 @@ async function generatePrompts(targetDir: string, baseApp: string): Promise<void
     fs.cpSync(targetDir, workDir, { recursive: true });
 
     // Copy the base app so Gemini can see what app the prompts target
-    const baseAppHtml = path.join(rootDir, 'harness', 'base_apps', baseApp, 'index.html');
+    const baseAppHtml = path.join(baseAppsDir, baseApp, 'index.html');
     if (fs.existsSync(baseAppHtml)) {
       fs.copyFileSync(baseAppHtml, path.join(workDir, 'base-app.html'));
     }
@@ -302,8 +300,8 @@ grader: ${guideName}
 ${prompt}
 `;
 
-  fs.mkdirSync(TASKS_DIR, { recursive: true });
-  fs.writeFileSync(path.join(TASKS_DIR, `${taskName}.md`), taskContent);
+  fs.mkdirSync(tasksDir, { recursive: true });
+  fs.writeFileSync(path.join(tasksDir, `${taskName}.md`), taskContent);
   console.log(cGreen(`✅ Created task: harness/tasks/${taskName}.md`));
 
   return { taskName, baseApp: 'daily-grind', prompt };
@@ -339,7 +337,7 @@ async function runAgentTest(targetDir: string, guideName: string, taskMap: Map<s
   const results: Record<string, { passed: number; total: number }> = {};
 
   // 1. Grade base app
-  const baseAppHtml = path.join(rootDir, 'harness', 'base_apps', taskInfo.baseApp, 'index.html');
+  const baseAppHtml = path.join(baseAppsDir, taskInfo.baseApp, 'index.html');
   if (fs.existsSync(baseAppHtml)) {
     const preResults = await gradeOutput(baseAppHtml, graderPath, path.join(targetDir, 'test-app-results', 'pre-grade-report'));
     if (preResults) results['pre'] = preResults;
