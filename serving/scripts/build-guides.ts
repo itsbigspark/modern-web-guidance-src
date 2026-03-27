@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import { marked } from "marked";
 import { Embedder } from "../mcp-server/lib/embedder.ts";
 import { Store, type UseCase as StoreUseCase } from "../mcp-server/lib/store.ts";
+import { Gpt4AllEmbedder } from "../benchmarks/rag/gpt4all-embedder.ts";
 import { replaceMacros } from "../mcp-server/lib/macros.ts";
 import { classifyGuide, scanAllGuides } from "../../harness/lib/utils.ts";
 import { getFeatureName } from "../mcp-server/data/baseline.ts";
@@ -32,14 +33,26 @@ async function processGuides() {
   const storeUseCases: StoreUseCase[] = [];
 
   console.log("Initializing Embedder...");
-  const embedder = Embedder.getInstance();
+  const modelArg = process.argv.find((arg) => arg.startsWith("--model="));
+  const modelName = modelArg ? modelArg.split("=")[1] : undefined;
+  
+  if (modelName) {
+    console.log(`Using custom embedding model: ${modelName}`);
+  }
+  
+  let embedder: any;
+  if (modelName && (modelName.includes(".gguf") || modelName.includes("nomic"))) {
+    embedder = Gpt4AllEmbedder.getInstance(modelName);
+  } else {
+    embedder = Embedder.getInstance(modelName);
+  }
   await embedder.init();
 
   console.log("Initializing Store...");
   const store = new Store();
 
-  // Check for target guide argument
-  const targetGuidePath = process.argv[2];
+  // Check for target guide argument, ignoring flags
+  const targetGuidePath = process.argv.slice(2).find(arg => !arg.startsWith("--"));
 
   if (targetGuidePath) {
     // Single guide mode
@@ -149,8 +162,10 @@ async function processSingleGuideFile(
     featuresUsed,
   });
 
-  const chunks = chunkMarkdown(processedMarkdown);
-  chunks.push(frontmatter);
+  const isNoChunking = process.argv.includes("--no-chunking");
+  const chunks = isNoChunking 
+    ? [`${frontmatter}\n\n${processedMarkdown}`] 
+    : [...chunkMarkdown(processedMarkdown), frontmatter];
 
   const embedder = Embedder.getInstance(); // Singleton, already init
 
