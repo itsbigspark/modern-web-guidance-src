@@ -26,6 +26,16 @@ export function extractModelFromResults(resultsDir: string, agent: string): stri
 }
 
 function extractErrorMessage(dir: string, targetFile: string): string {
+  const failureFile = path.join(dir, 'generation_failed.json');
+  if (fs.existsSync(failureFile)) {
+    try {
+      const failureInfo = JSON.parse(fs.readFileSync(failureFile, 'utf-8'));
+      return `Generation failed: ${failureInfo.agentName} exited with ${failureInfo.exitCode}`;
+    } catch (e) {
+      return 'Generation failed (could not parse failure info)';
+    }
+  }
+
   const stderrPath = path.join(dir, 'agent_stderr.log');
   
   if (!fs.existsSync(stderrPath)) {
@@ -89,10 +99,11 @@ export async function collectResults(resultsDir: string, suiteConfig: SuiteConfi
       const graderPath = path.join(taskInfo.guideDir, 'grader.ts');
       const graderResults = path.join(dir, `${guide}_results.json`);
 
-      const targetExists = isTargetAppPresent(targetFile, targetPkgJson);
+      const targetAppExists = isTargetAppPresent(targetFile, targetPkgJson);
 
-      // If grader is missing, target file is missing, or results already exist, skip generating a runner.
-      if (!fs.existsSync(graderPath) || !targetExists || fs.existsSync(graderResults)) {
+      const failureFile = path.join(dir, 'generation_failed.json');
+      // If grader is missing, generation failed, target file is missing, or results already exist, skip generating a runner.
+      if (!fs.existsSync(graderPath) || fs.existsSync(failureFile) || !targetAppExists || fs.existsSync(graderResults)) {
         continue;
       }
 
@@ -102,10 +113,25 @@ export async function collectResults(resultsDir: string, suiteConfig: SuiteConfi
       const gradeScript = `
 import fs from 'fs';
 import { spawnSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { runPlaywright } from ${JSON.stringify(runGraderModulePath)};
 
 async function run() {
   try {
+    const pkgJsonPath = ${JSON.stringify(targetPkgJson)};
+    if (fs.existsSync(pkgJsonPath)) {
+      const installResult = spawnSync('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--ignore-workspace'], {
+        cwd: ${JSON.stringify(dir)},
+        stdio: 'inherit',
+        shell: true,
+        env: { ...process.env, CI: 'true' }
+      });
+      if (installResult.status !== 0) {
+        console.error("pnpm install failed");
+        process.exit(1);
+      }
+    }
+
     const pkgJsonPath = ${JSON.stringify(targetPkgJson)};
     if (fs.existsSync(pkgJsonPath)) {
       const installResult = spawnSync('pnpm', ['install', '--frozen-lockfile', '--prefer-offline', '--ignore-workspace'], {
@@ -228,12 +254,12 @@ run();
       let scenarioResults: any[] = [];
       const graderResults = path.join(dir, `${guide}_results.json`);
 
-      const targetExists = isTargetAppPresent(targetFile, targetPkgJson);
+      const targetAppExists = isTargetAppPresent(targetFile, targetPkgJson);
 
       if (!fs.existsSync(graderPath)) {
         console.warn(`Grader not found for ${guide} at ${graderPath}`);
         scenarioResults.push({ name: 'Configuration', status: 'fail', message: 'Grader not found' });
-      } else if (!targetExists) {
+      } else if (!targetAppExists) {
         scenarioResults.push({ name: 'File Check', status: 'fail', message: 'Target app missing' });
       } else if (!fs.existsSync(graderResults)) {
         const errorMessage = extractErrorMessage(dir, targetFile);
