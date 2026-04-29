@@ -8,7 +8,6 @@ import { fileURLToPath } from 'node:url';
 const ROOT_DIR = path.resolve(import.meta.dirname, "../.."); // guidance/
 const SERVING_DIR = path.join(ROOT_DIR, "serving");
 const DIST_DIR = path.join(ROOT_DIR, "dist");
-const SKILLS_CLI_TEMPLATE_DIR = path.join(SERVING_DIR, "skills-cli/template");
 
 const isDryRun = process.argv.includes('--dry-run');
 
@@ -54,6 +53,7 @@ async function publishToDistributionRepo(publishCliDir: string, newVersion: stri
   //   stdio: ['pipe', 'inherit', 'inherit']
   // });
   // console.log(`✅ GitHub release v${newVersion} created successfully!`);
+  console.log(releaseNotes);
 
   console.log(`\n✅ Successfully published v${newVersion} to GoogleChrome/modern-web-guidance!`);
 }
