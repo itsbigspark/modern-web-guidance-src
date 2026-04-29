@@ -23,19 +23,11 @@ const getLatestGitTag = () => execSync('git describe --tags --abbrev=0 --match="
 
 export async function getNextVersion(getLatestTag = getLatestGitTag): Promise<string> {
   console.log("Determining next version...");
-  let currentVersion = "0.0.0";
 
-  try {
-    // Get the latest tag that looks like v*.*.*
-    const latestTag = getLatestTag();
-    currentVersion = latestTag.startsWith('v') ? latestTag.slice(1) : latestTag;
-    console.log(`Found latest tag: ${latestTag}`);
-  } catch (e) {
-    console.warn("No version tags found, falling back to package.json version.");
-    const vscodePath = path.join(SKILLS_CLI_TEMPLATE_DIR, "package.json");
-    const vscodeData = JSON.parse(await fs.readFile(vscodePath, 'utf8'));
-    currentVersion = vscodeData.version;
-  }
+  // Get the latest tag that looks like v*.*.*
+  const latestTag = getLatestTag();
+  const currentVersion = latestTag.startsWith('v') ? latestTag.slice(1) : latestTag;
+  console.log(`Found latest tag: ${latestTag}`);
 
   const newVersion = incrementVersion(currentVersion);
   console.log(`Next version will be: ${newVersion}`);
