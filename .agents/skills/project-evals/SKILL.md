@@ -59,7 +59,7 @@ Once a guide has its `guide.md`, `demo.html`, and `expectations.md` completely w
 
 ## Generating the Eval Graders
 
-To generate the eval graders, use the `gd dev` tool. 
+To generate the eval graders, use the `gd dev` tool.
 
 Run the following command:
 ```bash
