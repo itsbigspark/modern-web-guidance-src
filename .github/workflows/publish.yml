@@ -9,6 +9,10 @@ on:
       - '.github/workflows/publish.yml'
   workflow_dispatch: {}
 
+concurrency:
+  group: publish-skills
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
