@@ -81,9 +81,9 @@ npx modern-web-guidance@latest retrieve "animate-to-from-top-layer"
 
 #### Google Antigravity: `agy plugin install https://github.com/GoogleChrome/modern-web-guidance`
 
-#### Github CLI: `gh skill install GoogleChrome/modern-web-guidance`
+#### GitHub CLI: `gh skill install GoogleChrome/modern-web-guidance`
 
-#### Github Copilot CLI: 
+#### GitHub Copilot CLI: 
 
 ```shell
 /plugin marketplace add GoogleChrome/modern-web-guidance
