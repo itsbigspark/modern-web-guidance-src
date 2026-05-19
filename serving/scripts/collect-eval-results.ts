@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { resultsDir } from '../../lib/paths.ts';
 
-const ALLOWED_AGENTS = ['claudecode', 'geminicli', 'codex', 'claude', 'codexcli'];
+const ALLOWED_AGENTS = ['claudecode', 'geminicli', 'codex', 'claude', 'codexcli', 'antigravity'];
 
 function isAgentAllowed(agent: string): boolean {
   const normalized = agent.toLowerCase().replace(/[-_]/g, '');
@@ -20,6 +20,7 @@ interface EvalsSummary {
   serving: string;
   model: string;
   taskCount: number;
+  assertionCount: number;
   unguidedPassRate: number;
   guidedPassRate: number;
 }
@@ -50,7 +51,12 @@ function collectResults() {
       const content = fs.readFileSync(evalsPath, 'utf8');
       const data = JSON.parse(content);
 
-      const agent = data.agent || 'unknown';
+      let agent = data.agent || 'unknown';
+      if (agent.startsWith('jetski')) {
+        agent = 'antigravity';
+        item.name = item.name.replace('jetski_cli', 'agy');
+      }
+
       if (!isAgentAllowed(agent)) {
         console.log(`Skipping ${item.name} (agent ${agent} not in allowlist)`);
         continue;
@@ -67,6 +73,11 @@ function collectResults() {
         console.log(`Skipping ${item.name} (taskCount ${taskCount} < 60)`);
         continue;
       }
+      // broken run.
+      if (summary.unguidedPassRate == 0 || summary.guidedPassRate == 0 || summary.guidedTotal < 500) {
+        console.log(`Skipping ${item.name} (broken run probably)`);
+        continue;
+      }
 
       // Extract serving info, default to skills_cli if not specified
       let serving = data.serving || 'unknown';
@@ -81,6 +92,7 @@ function collectResults() {
         serving: serving,
         model: data.model || 'unknown',
         taskCount: taskCount,
+        assertionCount: summary.guidedTotal ?? 0,
         unguidedPassRate: summary.unguidedPassRate ?? 0,
         guidedPassRate: summary.guidedPassRate ?? 0,
       });

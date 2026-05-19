@@ -1,18 +1,18 @@
 <p align="center">
-  <img src="assets/modern-web-guidance.svg" alt="Modern Web Guidance Logo" width="150" />
+  <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/modern-web-guidance.svg" alt="Modern Web Guidance Logo" width="150" />
 </p>
 
 # Modern Web Guidance
 
 Inject web platform expertise, best practices, and modern API patterns directly into your AI coding agents.
 
-**Modern Web Guidance** is an agent skill (aka `SKILL.md`) with a CLI that helps AI agents build better web applications using modern, high-performance, accessible, and secure APIs instead of legacy workarounds.
+**Modern Web Guidance** is an agent skill (aka `SKILL.md`) with a CLI that helps coding agents build better web applications using modern, high-performance, accessible, and secure APIs instead of legacy workarounds.
 
 *Supported by the Google Chrome team, the Microsoft Edge team, and the web development community.*
 
 <!-- <LIKE A DEMO VIDEO LOOP OR SOMETHING?> -->
 
-## <img src=".github/img/terminal.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Quickstart
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/terminal.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Quickstart
 
 ```shell
 npx modern-web-guidance@latest install
@@ -30,7 +30,7 @@ npx modern-web-guidance@latest search "animate a dialog modal backdrop"
 npx modern-web-guidance@latest retrieve "animate-to-from-top-layer"
 ```
 
-## <img src=".github/img/lightbulb.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Why?
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/lightbulb.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Why?
 
 Coding agents often default to older patterns because LLM training data contains vast amounts of legacy code. This often leads them to generate bloated JavaScript for tasks that now have native, high-performance web platform solutions.
 
@@ -41,7 +41,7 @@ Even if a model knows an API exists, it often lacks the density of real-world, m
 * **Performance & Accessibility**: Eliminating legacy bloat with clean, native patterns.
 * **Responsible Fallbacks**: Guiding models to use sensible, lightweight fallbacks instead of heavy polyfills or legacy libraries.
 
-## <img src=".github/img/package.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> What's Included?
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/package.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> What's Included?
 
 We cover the past several years of the web platform's new features, all the way up to the cutting edge. The guides are **designed to be token-efficient**; we run evals enabling us to prune lowest-common-denominator content that models already know.
 
@@ -77,6 +77,8 @@ We cover the past several years of the web platform's new features, all the way 
     </td>
   </tr>
 </table>
+
+_View an example:_ [the `navigation-drawer` guide](https://github.com/GoogleChrome/modern-web-guidance/blob/main/skills/modern-web-guidance/guides/user-experience/navigation-drawer.md).
 
 #### The full list
 
@@ -301,7 +303,7 @@ We cover the past several years of the web platform's new features, all the way 
 * **Gotchas & Quirks**: We document hidden platform limitations, such as the 64KB payload quota for `fetchLater()` or macOS-specific scrollbar behaviors.
 * **Baseline-Aware Integration**: We leverage real-time compatibility data from the **Baseline** project so agents can dynamically adapt to current browser support and any browser support preferences.
 
-## <img src=".github/img/cpu.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> How It Works
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/cpu.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> How It Works
 
 0. **Activation**: The coding agent activates the `modern-web-guidance` skill because of a relevant task. The agent is instructed to use the `modern-web` CLI for web platform queries.
 2. **Local Semantic Search**: The agent runs `modern-web search "<query>"`. The tool matches the query to the best guide using an offline, CPU-efficient TensorFlow.js model (no network calls, no API keys).
@@ -311,7 +313,7 @@ We cover the past several years of the web platform's new features, all the way 
 > Note: We use `npx` to ensure the content doesn't go stale, but the CLI works offline, completely private and local.
 > The NPM package is self-contained, with no extra dependencies to ensure both low-latency and supply-chain security.
 
-## <img src=".github/img/package.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Alternative Installation Methods
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/package.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Alternative Installation Methods
 
 <details>
 <summary><b>Vercel Skills CLI</b> (aka <code>npx skills</code>)</summary>
@@ -357,15 +359,15 @@ agy plugin install https://github.com/GoogleChrome/modern-web-guidance
 ```
 </details>
 
-## <img src=".github/img/refresh-cw.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Updating
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/refresh-cw.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Updating
 
 If you installed the skill using `npx modern-web-guidance@latest install`, you can update with: `npx modern-web-guidance@latest update`.
 
 Otherwise, consult your agent's documentation for updating plugins and skills.
 
-## <img src=".github/img/shield-check.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Evals to prove this works well ;)
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/shield-check.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Evals to prove this works well ;)
 
-We developed a robust eval harness to ensure that the content is **empirically proven and continuously calibrated** to guarantee AI agents write better code.  We run automated evaluations using a closed-loop validation pipeline:
+We developed a robust eval harness to ensure that the content is **empirically proven and continuously calibrated** to ensure AI agents write better code.  We run automated evaluations using a closed-loop validation pipeline:
 
 ```
   [ Expert-authored guidance and demo ]
@@ -377,32 +379,32 @@ We developed a robust eval harness to ensure that the content is **empirically p
   [ Calibration loop ] ───────> Runs Grader on Gold-Standard Demo (Must Pass 100%)
             │                   Runs Grader on Negative Demo (Must Fail 100%)
             ▼
-  [ E2E agent evals ] ────────> Runs coding agents in Guided vs. Unguided modes
-                                Compares accuracy w/ and w/o guide injection to prove impact
+  [ E2E agent evals ] ────────> Runs coding agents in guided vs. unguided modes
+                                Compares accuracy w/ and w/o the skill
 ```
 
-0. **Simulated Developer Tasks**: We define realistic, intent-based developer prompts (in `tasks/task.md`) that mimic real-world requests (e.g., "make my images load faster"). These prompts avoid naming specific APIs or features, testing whether the agent can successfully discover and implement the correct modern patterns solely by reading the guide.
-1. **Outcome-Based Assertions**: We write browser automation scripts that verify the guide was followed correctly: exact runtime behaviors, computed styles, and accessibility states.
+0. **Simulated Developer Tasks**: We define realistic, developer prompts that mimic real-world requests (e.g., "make my images load faster"). The prompts avoid naming APIs or features, testing whether the agent can successfully discover the relevant guides naturally.
+1. **Browser-based Assertions**: We write browser automation scripts that verify the guide was followed correctly: exact runtime behaviors, computed styles, accessibility states, etc.
 2. **Self-Healing Calibration**: Graders are calibrated against both a reference implementation (100% pass target) and a control page (0% pass target). The agent automatically refines tests on failure.
 3. **E2E Testing**: We measure coding agent performance on real tasks with and without guidance. The _opportunity_ (100% - unguided pass rate) and _uplift_ (guided - unguided pass rate) are key. If there's little opportunity, then models already do a great job and our guidance isn't providing much value. Based on the results, we revise guides to maximize the uplift, optimizing their effectiveness.
 
-### Recent eval results
+### Recent eval results snapshot
 
-| Suite | Agent + Model | Tasks | Unguided → Guided (Uplift) |
+| Date | Agent + Model | Tasks / Assertions | Unguided → Guided (Uplift) |
 | :--- | :--- | :---: | :---: |
-| Nightly (May 17) | ❂ codex_cli (gpt-5.5) | 75 | 37% → 65% (**+28%**) |
-| Nightly (May 17) | ✱ claude_code (opus-4-7) | 75 | 54% → 85% (**+31%**) |
-| Nightly (May 16) | ❂ codex_cli (gpt-5.5) | 75 | 49% → 82% (**+33%**) |
-| Nightly (May 16) | ✱ claude_code (opus-4-7) | 75 | 51% → 86% (**+35%**) |
-| Nightly (May 15) | ❂ codex_cli (gpt-5.5) | 74 | 52% → 81% (**+29%**) |
-| Nightly (May 15) | ✱ claude_code (opus-4-7) | 74 | 53% → 82% (**+29%**) |
-| Nightly (May 14) | ❂ codex_cli (gpt-5.5) | 68 | 54% → 86% (**+32%**) |
-| Nightly (May 14) | ✱ claude_code (opus-4-7) | 68 | 54% → 91% (**+37%**) |
-| Nightly (Apr 30) | ✱ claude_code (opus-4-6) | 66 | 44% → 81% (**+37%**) |
-| Nightly (Apr 28) | ✱ claude_code (opus-4-6) | 66 | 41% → 77% (**+36%**) |
+| May 18 | claude_code (opus-4-7) | 75 / 603 | 52% → 85% (**+33pp**) |
+| May 17 | claude_code (opus-4-7) | 75 / 603 | 54% → 85% (**+31pp**) |
+| May 16 | codex_cli (gpt-5.5) | 75 / 603 | 49% → 82% (**+33pp**) |
+| May 16 | claude_code (opus-4-7) | 75 / 603 | 51% → 86% (**+35pp**) |
+| May 15 | codex_cli (gpt-5.5) | 74 / 600 | 52% → 81% (**+29pp**) |
+| May 15 | claude_code (opus-4-7) | 74 / 600 | 53% → 82% (**+29pp**) |
+| May 15 | Antigravity | 74 / 600 | 47% → 91% (**+44pp**) |
+| May 14 | Antigravity | 68 / 554 | 47% → 91% (**+44pp**) |
+| Apr 30 | claude_code (opus-4-6) | 66 / 516 | 44% → 81% (**+37pp**) |
+| Apr 28 | claude_code (opus-4-6) | 66 / 524 | 41% → 77% (**+36pp**) |
 
 
-## <img src=".github/img/boxes.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Available Skill Packs
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/boxes.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Available Skill Packs
 
 You can customize which skill packs are installed using the `--choose` flag:
 
@@ -413,7 +415,7 @@ npx modern-web-guidance@latest install --choose
 * **`modern-web-guidance`** (~234 tokens): Comprehensive guidance on modern browser APIs, layouts, and performance.
 * **`chrome-extensions`** (~181 tokens): Guidance on Manifest V3, background workers, extension APIs, and Chrome Web Store publishing.
 
-## <img src=".github/img/lock.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Telemetry & Privacy
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/lock.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Telemetry & Privacy
 
 Google collects anonymous usage statistics (such as search queries, guide retrievals, and installation) to improve the reliability, relevance, and performance of the tool. You can inspect what is collected in [modern-web.ts](https://github.com/GoogleChrome/modern-web-guidance-src/blob/main/serving/bin/modern-web.ts).
 
@@ -425,16 +427,16 @@ Google collects anonymous usage statistics (such as search queries, guide retrie
 
 Google handles this data in accordance with the [Google Privacy Policy](https://policies.google.com/privacy).
 
-## <img src=".github/img/users.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Contributors
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/users.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Contributors
 
-Active contributors are what keep this project moving forward. Thanks to everyone who has contributed!
+If you'd like to contribute to modern-web-guidance, please see [source repo's `CONTRIBUTING.md`](https://github.com/GoogleChrome/modern-web-guidance-src/blob/CONTRIBUTING.md). The `modern-web-guidance` repo is a purely a publish target for clean skills installation.
 
-<a href="https://github.com/GoogleChrome/modern-web-guidance/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=GoogleChrome/modern-web-guidance" />
+Huge thanks to everyone who has contributed!
+
+<a href="https://github.com/GoogleChrome/modern-web-guidance-src/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=GoogleChrome/modern-web-guidance-src" />
 </a>
 
-(We build the project in the [modern-web-guidance-src](https://github.com/GoogleChrome/modern-web-guidance-src) repo.)
+## <img src="https://github.com/GoogleChrome/modern-web-guidance/raw/main/.github/img/file-text.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Attribution
 
-## <img src=".github/img/file-text.svg" width="24" height="24" style="vertical-align: middle; margin-right: 4px;"> Attribution
-
-Portions of the documentation in this project are derived from [MDN Web Docs](https://developer.mozilla.org/) by Mozilla Contributors, and [W3C](https://www.w3.org/) specifications.
+Portions of the documentation in this project are derived from [MDN Web Docs](https://developer.mozilla.org/) by Mozilla Contributors and [W3C](https://www.w3.org/), [WHATWG](https://whatwg.org), and [IETF](https://www.ietf.org) specifications.
