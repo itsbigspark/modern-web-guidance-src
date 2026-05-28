@@ -35,7 +35,7 @@ Must use this skill:
 Search with an action-oriented query summarizing what you want to achieve using the `search` command.
 
 ```sh
-{{toam:bin:modern-web-guidance}} search "<query>"
+{{toam:bin:modern-web}} search "<query>"
 ```
 
 **Example Output**:
@@ -62,7 +62,7 @@ Search with an action-oriented query summarizing what you want to achieve using 
 
 > **Note**: If search results are vague, return no matches, or show low similarity scores, run the `list` command to browse all guides:
 > ```sh
-> {{toam:bin:modern-web-guidance}} list
+> {{toam:bin:modern-web}} list
 > ```
 
 ---
@@ -72,7 +72,7 @@ Search with an action-oriented query summarizing what you want to achieve using 
 Once you have a relevant `id` from the search results, call this script using the `retrieve` command to get the full guide. You can pass multiple IDs separated by commas.
 
 ```sh
-{{toam:bin:modern-web-guidance}} retrieve "<id>"
+{{toam:bin:modern-web}} retrieve "<id>"
 ```
 
 
@@ -81,7 +81,7 @@ Once you have a relevant `id` from the search results, call this script using th
 
 ## About the bin
 
-- `{{toam:bin:modern-web-guidance}}` is the absolute path to the bundled runtime CLI staged by the asset manager during install. The bin loads the local TFJS MiniLM model + pre-computed embeddings to do semantic search over the guide corpus; latency is ~100 ms locally with no network required.
+- `{{toam:bin:modern-web}}` is the absolute path to the bundled runtime CLI staged by the asset manager during install. The bin loads the local TFJS MiniLM model + pre-computed embeddings to do semantic search over the guide corpus; latency is ~100 ms locally with no network required.
 - The bin, model, embeddings, and guide corpus are all part of the install artefact — no `npm install`, no `npx`, no network at runtime.
 
 ## Guidelines
